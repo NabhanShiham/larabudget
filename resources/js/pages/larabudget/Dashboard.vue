@@ -35,15 +35,6 @@ const breadcrumbs: BreadcrumbItem[] = [
                 <PlaceholderPattern/>
                     <center><h1>Categories</h1></center>
                     <br>
-                    <center><p>Groceries</p></center>
-                    <br>
-                    <center><p>Saving</p></center>
-                    <br>
-                    <center><p>Subscriptions</p></center>
-                    <br>
-                    <center><p>Takeout</p></center>
-                    <br>
-                    <center><p>Health</p></center>
             </div>
         </div>
     </AppLayout>

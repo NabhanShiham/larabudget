@@ -6,8 +6,9 @@ use Illuminate\Support\ServiceProvider;
 
 class RouteServiceProvider extends ServiceProvider {
     public function boot(){
+        $this->configureRateLimiting();
         parent::boot();
-        Route::middleware('api')
+        Route::middleware('web')
             ->group(base_path('routes/larabudget.php'));
     }
 }

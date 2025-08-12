@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('profiles', function (Blueprint $table) {
             $table->id();
-            $table->float('mainbudget');
-            $table->float('currentspent');
-            $table->rememberToken();
-            $table->foreignIdFor(\App\Models\User::class)->constrained();
+            $table->float('mainbudget')->default(0.00);
+            $table->float('currentspent')->default(0.00);
+            $table->foreignId('user_id')
+                ->constrained()
+                ->cascadeOnDelete();
             $table->timestamps();
         });
 

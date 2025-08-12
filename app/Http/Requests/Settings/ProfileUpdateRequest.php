@@ -25,6 +25,8 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
+            'mainbudget' => ['required', 'numeric', 'min:0'],
+            'currentspent' => ['required', 'numeric', 'min:0', 'lte:mainbudget']
         ];
     }
 }

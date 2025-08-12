@@ -47,6 +47,14 @@ Route::get('/hasone', function(){
     dump($user->attributesToArray);
 });
 
+Route::middleware('auth')->prefix('larabudget')->group(function () {
+    Route::get('/profile', [\App\Http\Controllers\Larabudget\UserProfileController::class, 'edit'])
+         ->name('larabudget.edit');
+         
+    Route::patch('/profile', [\App\Http\Controllers\Larabudget\UserProfileController::class, 'update'])
+         ->name('larabudget.update');
+});
+
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
 

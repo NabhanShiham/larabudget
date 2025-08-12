@@ -1,55 +1,47 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Larabudget;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Settings\ProfileUpdateRequest;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Http\RedirectResponse;
+use App\Http\Requests\UpdateBudgetRequest;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class UserProfileController extends Controller
 {
-    // public function createProfile(Request $request){
-    //     $user_id = Auth::id();
-    //     $data['user_id'] = $user_id;
-    //     $data = request->validate([
-    //         'id' => 'required|string',
-    //         'mainbudget' => 'required|float|min:0',
-    //         'currentspent' => 'required|float|min:0',
-    //         'user_id' => 'required|integer'
-    //     ]);
-    //     $user = auth()->user();
-    // }
 
-    // public function getProfile(){
-    //     $user_id = Auth::id();
-        
-    // }
+    /** show the user edit form thingie i forogor */
 
-    /**
-    * Show the user's larabudget profile edit form.
-    */
-    public function edit(Request $request):Response
+    public function edit(Request $request): Response
     {
-            return Inertia::render('/resources/js/components/LaraProfileEditForm', [
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
-            'status' => $request->session()->get('status'),
-            ]);
+        $user = Auth::user()->load('profile');
+
+        return Inertia::render('Components/LaraProfileEditForm', [
+            'profile' => $user->profile ?? [
+                'mainbudget' => $user->profile->mainbudget ?? 0,
+                'currentspent' => $user->profile->currentspent ?? 0
+            ]
+        ]);
     }
 
-    public function update(){
-        $request->user()->fill($request->validated());
+    public function update(UpdateBudgetRequest $request): RedirectResponse
+    {
+        $user = $request->user();
+        
+        $user->profile()->updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'mainbudget' => $request->mainbudget,
+                'currentspent' => $request->spending
+            ]
+        );
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
-
-        $request->user()->save();
-
-        return to_route('profile.edit');
+        return redirect()->back()
+            ->with('success', 'Budget updated successfully!');
     }
+    
 }
