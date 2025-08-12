@@ -8,23 +8,23 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
+    return Inertia::render('larabudget/Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('profile', function () {
-    return Inertia::render('Profile');
+    return Inertia::render('larabudget/Profile');
 })->middleware(['auth', 'verified'])->name('profile');
 
 Route::get('spending', function () {
-    return Inertia::render('Spending');
+    return Inertia::render('larabudget/Spending');
 })->middleware(['auth', 'verified'])->name('spending');
 
 Route::get('friends', function () {
-    return Inertia::render('Friends');
+    return Inertia::render('larabudget/Friends');
 })->middleware(['auth', 'verified'])->name('friends');
 
 Route::get('collaborate', function () {
-    return Inertia::render('Collaborate');
+    return Inertia::render('larabudget/Collaborate');
 })->middleware(['auth', 'verified'])->name('collaborate');
 
 Route::get('/hasone', function(){

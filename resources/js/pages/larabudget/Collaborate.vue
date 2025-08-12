@@ -2,18 +2,18 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
-import PlaceholderPattern from '../components/PlaceholderPattern.vue';
+import PlaceholderPattern from '@/components/PlaceholderPattern.vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Profile Information',
-        href: '/profile',
+        title: 'Collaborate',
+        href: '/collaborate',
     },
 ];
 </script>
 
 <template>
-    <Head title="Profile" />
+    <Head title="Collaborate" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4 overflow-x-auto">
@@ -21,18 +21,13 @@ const breadcrumbs: BreadcrumbItem[] = [
             </div>
             <div class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
                 <PlaceholderPattern/>
-                    <center><h1>Main Budget</h1></center>
+                    <center><h1>Collaborate with your Friends!</h1></center>
                     <br>
-                    <center><p>Current Spending</p></center>
+                    <center><p>New Project</p></center>
                     <br>
-                    <center><p>Categories</p></center>
+                    <center><p>Friends List</p></center>
                     <br>
             </div>
         </div>
     </AppLayout>
 </template>
-
-<script>
-
-
-</script>
