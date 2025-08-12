@@ -1,29 +1,51 @@
 <template>
-  <Head title="Profile" />
+  <Head title="Budget Profile" />
 
   <AppLayout :breadcrumbs="breadcrumbs">
     <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4 overflow-x-auto">
-      <div class="grid auto-rows-min gap-4 md:grid-cols-3"></div>
-
-      <div class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
-        <h1 class="text-center">Main Budget</h1>
-        <br />
-        <p class="text-center">Current Spending</p>
-        <br />
-        <p class="text-center">Categories</p>
-        <br />
-        <div class="flex justify-center">
+      <div class="relative min-h-[50vh] flex-1 rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-6">
+          <div class="bg-card rounded-lg p-4 shadow">
+            <h3 class="text-sm font-medium text-muted-foreground">Main Budget</h3>
+            <p class="text-2xl font-bold">MVR {{ mainBudget.toFixed(2) }}</p>
+          </div>
+          <div class="bg-card rounded-lg p-4 shadow">
+            <h3 class="text-sm font-medium text-muted-foreground">Current Spending</h3>
+            <p class="text-2xl font-bold">MVR {{ currentSpent.toFixed(2) }}</p>
+          </div>
+          <div class="bg-card rounded-lg p-4 shadow">
+            <h3 class="text-sm font-medium text-muted-foreground">Remaining</h3>
+            <p class="text-2xl font-bold" :class="remainingBudget < 0 ? 'text-destructive' : 'text-success'">
+              MVR {{ remainingBudget.toFixed(2) }}
+            </p>
+          </div>
+        </div>
+        <div class="px-6 pb-6">
+          <div class="h-4 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+            <div 
+              class="h-full transition-all duration-500" 
+              :class="budgetPercentage > 80 ? 'bg-destructive' : budgetPercentage > 50 ? 'bg-warning' : 'bg-success'"
+              :style="`width: ${Math.min(budgetPercentage, 100)}%`"
+            ></div>
+          </div>
+          <p class="text-sm text-muted-foreground mt-2 text-center">
+            {{ Math.round(budgetPercentage) }}% of budget used
+          </p>
+        </div>
+        <div class="flex justify-center p-6">
           <Dialog>
             <DialogTrigger as-child>
-              <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
-                Edit Profile
-              </button>
+              <Button variant="default" size="lg">
+                <PencilIcon class="w-4 h-4 mr-2" />
+                Edit Budget
+              </Button>
             </DialogTrigger>
-            <DialogContent>
-              <div class="fixed inset-0 bg-black/50" @click="closeModal"></div>
-              <div class="relative bg-blue dark:bg-black-900 rounded-lg shadow-xl p-6 w-full max-w-md mx-auto">
-                <LaraProfileEditForm :mustVerifyEmail="mustVerifyEmail" :status="status" />
-              </div>
+            <DialogContent class="sm:max-w-[425px]">
+              <LaraProfileEditForm 
+                :initial-budget="mainBudget"
+                :initial-spent="currentSpent"
+                @saved="refreshProfile"
+              />
             </DialogContent>
           </Dialog>
         </div>
@@ -33,36 +55,44 @@
 </template>
 
 <script setup lang="ts">
-import AppLayout from '@/layouts/AppLayout.vue'
+import { computed, ref, onMounted } from 'vue';
 import { Head } from '@inertiajs/vue3'
-import LaraProfileEditForm from '@/components/LaraProfileEditForm.vue'
-import { type BreadcrumbItem } from '@/types'
-import HeadingSmall from '@/components/HeadingSmall.vue'
-import InputError from '@/components/InputError.vue'
+import AppLayout from '@/layouts/AppLayout.vue'
 import { Button } from '@/components/ui/button'
+import { PencilIcon } from 'lucide-vue-next'
 import {
   Dialog,
-  DialogClose,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import LaraProfileEditForm from '@/components/LaraProfileEditForm.vue'
 
-defineProps(['mustVerifyEmail', 'status'])
-
-const breadcrumbs: BreadcrumbItem[] = [
-  {
-    title: 'Profile Information',
-    href: '/profile',
-  },
+const breadcrumbs = [
+  { title: 'Dashboard', href: route('dashboard') },
+  { title: 'Budget Profile', href: route('larabudget.show') },
 ]
 
-const closeModal = () => {
-  // 
+const props = defineProps({
+    profile: {
+        type: Object,
+        required: true,
+        default: () => ({
+            mainbudget: 0,
+            currentspent: 0
+        })
+    },
+    mustVerifyEmail: Boolean,
+    status: String
+});
+
+const mainBudget = computed(() => Number(props.profile.mainbudget) || 0);
+const currentSpent = computed(() => Number(props.profile.currentspent) || 0);
+const remainingBudget = computed(() => mainBudget.value - currentSpent.value);
+const budgetPercentage = computed(() => {
+  return mainBudget.value > 0 ? (currentSpent.value / mainBudget.value) * 100 : 0;
+});
+
+const refreshProfile = () => {
+  window.location.reload();
 }
 </script>

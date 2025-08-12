@@ -24,7 +24,9 @@ class UserProfileController extends Controller
             'profile' => $user->profile ?? [
                 'mainbudget' => $user->profile->mainbudget ?? 0,
                 'currentspent' => $user->profile->currentspent ?? 0
-            ]
+            ],
+        'mustVerifyEmail' => $user instanceof MustVerifyEmail && ! $user->hasVerifiedEmail(),
+        'status' => session('status'),
         ]);
     }
 
@@ -42,6 +44,21 @@ class UserProfileController extends Controller
 
         return redirect()->back()
             ->with('success', 'Budget updated successfully!');
+    }
+
+    public function show()
+    {
+        $user = Auth::user()->load('profile');
+
+        return Inertia::render('larabudget/Profile', [
+            'profile' => [
+                'mainbudget' => $user->profile->mainbudget ?? 0,
+                'currentspent' => $user->profile->currentspent ?? 0,
+                'remaining' => ($user->profile->mainbudget ?? 0) - ($user->profile->currentspent ?? 0),
+                'updated_at' => $user->profile->updated_at ?? null
+            ],
+            'status' => session('status'),
+        ]);
     }
     
 }
