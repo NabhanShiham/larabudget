@@ -11,18 +11,19 @@
       'text-green-600 dark:text-green-400': isRemaining,
       'text-gray-900 dark:text-white': !isRemaining
     }">
-      ${{ amount.toFixed(2) }}
+      {{ amount }}
     </p>
   </div>
 </template>
 
 <script setup>
 import Icon from '@/components/Icon.vue'
+import { Currency } from 'lucide-vue-next';
 
 defineProps({
   title: String,
   amount: {
-    type: Number,
+    type: Currency,
     default: 0
   },
   icon: {

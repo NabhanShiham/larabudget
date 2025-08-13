@@ -5,28 +5,34 @@
     <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4 overflow-x-auto">
       <div class="relative min-h-[50vh] flex-1 rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-6">
-          <div class="bg-card rounded-lg p-4 shadow">
-            <h3 class="text-sm font-medium text-muted-foreground">Main Budget</h3>
-            <p class="text-2xl font-bold">MVR {{ mainBudget.toFixed(2) }}</p>
-          </div>
-          <div class="bg-card rounded-lg p-4 shadow">
-            <h3 class="text-sm font-medium text-muted-foreground">Current Spending</h3>
-            <p class="text-2xl font-bold">MVR {{ currentSpent.toFixed(2) }}</p>
-          </div>
-          <div class="bg-card rounded-lg p-4 shadow">
-            <h3 class="text-sm font-medium text-muted-foreground">Remaining</h3>
-            <p class="text-2xl font-bold" :class="remainingBudget < 0 ? 'text-destructive' : 'text-success'">
-              MVR {{ remainingBudget.toFixed(2) }}
-            </p>
-          </div>
+          <BudgetCard 
+          title="Main Budget" 
+          :amount="mainBudget" 
+          icon="dollar"
+        />
+          <BudgetCard 
+          title="Current Spending" 
+          :amount="currentSpent" 
+          icon="shopping-cart"
+        />
+          <BudgetCard 
+          title="Remaining" 
+          :amount="remainingBudget" 
+          :is-remaining="true"
+          icon="wallet"
+        />
         </div>
-        <div class="px-6 pb-6">
-          <div class="h-4 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+        <div class="mb-6">
+          <div class="px-6 pb-6">
+        <ProgressBar 
+          :value="(profile.currentspent / profile.mainbudget) * 100"
+        />
+      </div>
             <div 
               class="h-full transition-all duration-500" 
               :class="budgetPercentage > 80 ? 'bg-destructive' : budgetPercentage > 50 ? 'bg-warning' : 'bg-success'"
               :style="`width: ${Math.min(budgetPercentage, 100)}%`"
-            ></div>
+            >
           </div>
           <p class="text-sm text-muted-foreground mt-2 text-center">
             {{ Math.round(budgetPercentage) }}% of budget used
@@ -46,7 +52,6 @@
                 :initial-budget="mainBudget"
                 :initial-spent="currentSpent"
                 @saved="refreshProfile"
-                @vue:unmounted="refreshProfile"
               />
             </DialogContent>
           </Dialog>
@@ -62,6 +67,8 @@ import { Head, router } from '@inertiajs/vue3'
 import AppLayout from '@/layouts/AppLayout.vue'
 import { Button } from '@/components/ui/button'
 import { PencilIcon } from 'lucide-vue-next'
+import ProgressBar from '@/components/LaraProgressBar.vue'
+import BudgetCard from '@/components/LaraBudgetCard.vue'
 import {
   Dialog,
   DialogContent,
@@ -86,12 +93,35 @@ onMounted(async () => {
   }
 });
 
-const mainBudget = computed(() => Number(profile.value.mainbudget) || 0);
-const currentSpent = computed(() => Number(profile.value.currentspent) || 0);
-const remainingBudget = computed(() => mainBudget.value - currentSpent.value);
-const budgetPercentage = computed(() => {
-  return mainBudget.value > 0 ? (currentSpent.value / mainBudget.value) * 100 : 0;
+
+const mainBudget = computed(() => {
+  return new Intl.NumberFormat('en-MV', {
+    style: 'currency',
+    currency: 'MVR'
+  }).format(Number(profile.value.mainbudget) || 0);
 });
+
+const currentSpent = computed(() => {
+  return new Intl.NumberFormat('en-MV', {
+    style: 'currency',
+    currency: 'MVR'
+  }).format(Number(profile.value.currentspent) || 0);
+});
+
+const remainingBudget = computed(() => {
+  const remaining = (Number(profile.value.mainbudget) || 0) - (Number(profile.value.currentspent) || 0);
+  return new Intl.NumberFormat('en-MV', {
+    style: 'currency',
+    currency: 'MVR'
+  }).format(remaining);
+});
+
+const budgetPercentage = computed(() => {
+  const main = Number(profile.value.mainbudget) || 0;
+  const spent = Number(profile.value.currentspent) || 0;
+  return main > 0 ? (spent / main) * 100 : 0;
+});
+
 
 const refreshProfile = () => {
   window.location.reload();
