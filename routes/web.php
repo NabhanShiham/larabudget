@@ -27,7 +27,7 @@ Route::get('collaborate', function () {
     return Inertia::render('larabudget/Collaborate');
 })->middleware(['auth', 'verified'])->name('collaborate');
 
-Route::get('/hasone', function(){
+Route::get('/hasone', function () {
     $user = new User();
     $user->name = 'John Doe';
     $user->email = 'john@example.com';
@@ -49,25 +49,23 @@ Route::get('/hasone', function(){
 
 Route::middleware(['auth'])->prefix('larabudget')->group(function () {
     Route::get('/edit', [\App\Http\Controllers\larabudget\UserProfileController::class, 'edit'])
-         ->name('larabudget.edit');
-         
+        ->name('larabudget.edit');
+
     Route::patch('/update', [\App\Http\Controllers\larabudget\UserProfileController::class, 'update'])
-         ->name('larabudget.update');
+        ->name('larabudget.update');
 
     Route::get('/profile', [\App\Http\Controllers\larabudget\UserProfileController::class, 'show'])
-         ->name('larabudget.show');
+        ->name('larabudget.show');
 });
 
 Route::middleware('auth')->group(function () {
     Route::resource('categories', \App\Http\Controllers\larabudget\CategoryController::class)->except(['show']);
-    
+
     Route::post('/receipts', [\App\Http\Controllers\larabudget\ReceiptController::class, 'store']);
     Route::delete('/receipts/{receipt}', [\App\Http\Controllers\larabudget\ReceiptController::class, 'destroy']);
     Route::post('/categories/{category}/receipts', [ReceiptController::class, 'store']);
-
 });
 
 
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
-
+require __DIR__ . '/settings.php';
+require __DIR__ . '/auth.php';

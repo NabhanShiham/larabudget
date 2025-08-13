@@ -8,19 +8,19 @@ import axios from 'axios';
 import BudgetCard from '@/components/LaraBudgetCard.vue'
 
 const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Dashboard',
-        href: '/dashboard',
-    },
+  {
+    title: 'Dashboard',
+    href: '/dashboard',
+  },
 ];
 
 const profile = ref({ mainbudget: 0, currentspent: 0 });
 
 onMounted(async () => {
-  try{
-  const response = await axios.get('larabudget/profile');
-  profile.value = response.data.profile;
-  }catch (error){
+  try {
+    const response = await axios.get('larabudget/profile');
+    profile.value = response.data.profile;
+  } catch (error) {
     console.error('Error getting yo profile cuh:', error);
   }
 });
@@ -60,51 +60,50 @@ const refreshProfile = () => {
 </script>
 
 <template>
-    <Head title="Dashboard" />
 
-    <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4 overflow-x-auto">
-            <div class="grid auto-rows-min gap-4 md:grid-cols-3">
-                <div class="grid relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 md:grid-cols-1 dark:border-sidebar-border">
-                    <center><p>User Info</p></center>
-                    <div class="flex flex-wrap justify-center gap-4 p-4">          
-                            <BudgetCard 
-                            class="custom-dashboard-card"
-                            title="Main Budget" 
-                            :amount="mainBudget" 
-                            icon="dollar"
-                                />
-                                <BudgetCard 
-                                class="custom-dashboard-card"
-                                title="Current Spending" 
-                                :amount="currentSpent" 
-                                icon="shopping-cart"
-                                />
-                                <BudgetCard 
-                                class="custom-dashboard-card"
-                                title="Remaining" 
-                                :amount="remainingBudget" 
-                                :is-remaining="true"
-                                icon="wallet"
-                                />
-                    </div>
-                </div>
-                <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                    <PlaceholderPattern />
-                    <center><p>Spending</p></center>
-                </div>
-                <div class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                    <PlaceholderPattern />
-                    <center><p>Collaborate</p></center>
-                </div>
-            </div>
-            <div class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
-                <PlaceholderPattern/>
-                    <center><h1>Categories</h1></center>
-                    <br>
-            </div>
+  <Head title="Dashboard" />
+
+  <AppLayout :breadcrumbs="breadcrumbs">
+    <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4 overflow-x-auto">
+      <div class="grid auto-rows-min gap-4 md:grid-cols-3">
+        <div
+          class="grid relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 md:grid-cols-1 dark:border-sidebar-border">
+          <center>
+            <p>User Info</p>
+          </center>
+          <div class="flex flex-wrap justify-center gap-4 p-4">
+            <BudgetCard class="custom-dashboard-card" title="Main Budget" :amount="mainBudget" icon="dollar" />
+            <BudgetCard class="custom-dashboard-card" title="Current Spending" :amount="currentSpent"
+              icon="shopping-cart" />
+            <BudgetCard class="custom-dashboard-card" title="Remaining" :amount="remainingBudget" :is-remaining="true"
+              icon="wallet" />
+          </div>
         </div>
-    </AppLayout>
+        <div
+          class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
+          <PlaceholderPattern />
+          <center>
+            <p>Spending</p>
+          </center>
+        </div>
+        <div
+          class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
+          <PlaceholderPattern />
+          <center>
+            <p>Collaborate</p>
+          </center>
+        </div>
+      </div>
+      <div
+        class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
+        <PlaceholderPattern />
+        <center>
+          <h1>Categories</h1>
+        </center>
+        <br>
+      </div>
+    </div>
+  </AppLayout>
 </template>
 
 
@@ -150,11 +149,4 @@ const refreshProfile = () => {
   font-weight: bold;
   color: #059669;
 }
-
 </style>
-
-
-
-
-
-

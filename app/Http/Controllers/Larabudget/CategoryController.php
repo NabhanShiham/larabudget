@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Larabudget;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class CategoryController extends Controller
 {
@@ -39,7 +40,8 @@ class CategoryController extends Controller
         ]);
 
         auth()->user()->categories()->create($validated);
-        return redirect()->back()->with('success', 'Category created!');
+
+        return redirect()->route('categories.index');
     }
 
     /**

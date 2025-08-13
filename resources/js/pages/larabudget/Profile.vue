@@ -1,38 +1,22 @@
 <template>
+
   <Head title="Budget Profile" />
 
   <AppLayout :breadcrumbs="breadcrumbs">
     <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4 overflow-x-auto">
       <div class="relative min-h-[50vh] flex-1 rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-6">
-          <BudgetCard 
-          title="Main Budget" 
-          :amount="mainBudget" 
-          icon="dollar"
-        />
-          <BudgetCard 
-          title="Current Spending" 
-          :amount="currentSpent" 
-          icon="shopping-cart"
-        />
-          <BudgetCard 
-          title="Remaining" 
-          :amount="remainingBudget" 
-          :is-remaining="true"
-          icon="wallet"
-        />
+          <BudgetCard title="Main Budget" :amount="mainBudget" icon="dollar" />
+          <BudgetCard title="Current Spending" :amount="currentSpent" icon="shopping-cart" />
+          <BudgetCard title="Remaining" :amount="remainingBudget" :is-remaining="true" icon="wallet" />
         </div>
         <div class="mb-6">
           <div class="px-6 pb-6">
-        <ProgressBar 
-          :value="(profile.currentspent / profile.mainbudget) * 100"
-        />
-      </div>
-            <div 
-              class="h-full transition-all duration-500" 
-              :class="budgetPercentage > 80 ? 'bg-destructive' : budgetPercentage > 50 ? 'bg-warning' : 'bg-success'"
-              :style="`width: ${Math.min(budgetPercentage, 100)}%`"
-            >
+            <ProgressBar :value="(profile.currentspent / profile.mainbudget) * 100" />
+          </div>
+          <div class="h-full transition-all duration-500"
+            :class="budgetPercentage > 80 ? 'bg-destructive' : budgetPercentage > 50 ? 'bg-warning' : 'bg-success'"
+            :style="`width: ${Math.min(budgetPercentage, 100)}%`">
           </div>
           <p class="text-sm text-muted-foreground mt-2 text-center">
             {{ Math.round(budgetPercentage) }}% of budget used
@@ -45,14 +29,10 @@
                 <PencilIcon class="w-4 h-4 mr-2" />
                 Edit Budget
               </Button>
-              
+
             </DialogTrigger>
             <DialogContent class="sm:max-w-[425px]">
-              <LaraProfileEditForm 
-                :initial-budget="mainBudget"
-                :initial-spent="currentSpent"
-                @saved="refreshProfile"
-              />
+              <LaraProfileEditForm :initial-budget="mainBudget" :initial-spent="currentSpent" @saved="refreshProfile" />
             </DialogContent>
           </Dialog>
         </div>
@@ -85,10 +65,10 @@ const breadcrumbs = [
 const profile = ref({ mainbudget: 0, currentspent: 0 });
 
 onMounted(async () => {
-  try{
-  const response = await axios.get('larabudget/profile');
-  profile.value = response.data.profile;
-  }catch (error){
+  try {
+    const response = await axios.get('larabudget/profile');
+    profile.value = response.data.profile;
+  } catch (error) {
     console.error('Error getting yo profile cuh:', error);
   }
 });
