@@ -44,7 +44,7 @@
 
           <DialogFooter class="gap-2 sm:justify-center">
             <DialogClose as-child>
-              <Button variant="secondary" @click="closeCategoryModal">Cancel</Button>
+              <Button variant="secondary" @click="closeCategoryModal, refreshProfile">Cancel</Button>
             </DialogClose>
             <Button type="submit" :disabled="categoryForm.processing">Add Category</Button>
           </DialogFooter>
@@ -94,7 +94,7 @@ const submitProfile = () => {
     profileForm.patch(route('larabudget.update'), {
         preserveScroll: true,
         onSuccess: () => {
-            alert('Profile Updated Successfully!');
+            refreshProfile();
         }
       });
 }
@@ -114,4 +114,9 @@ const closeCategoryModal = () => {
   categoryForm.clearErrors()
   categoryForm.reset()
 }
+const refreshProfile = () => {
+  window.location.reload();
+}
+
 </script>
+

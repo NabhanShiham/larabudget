@@ -46,19 +46,30 @@ class UserProfileController extends Controller
             ->with('success', 'Budget updated successfully!');
     }
 
-    public function show()
+    public function show(Request $request)
     {
-        $user = Auth::user()->load('profile');
+        // $user = $request->user();
+        // return inertia('larabudget\Profile', [
+        //     'profile' => $user->profile ?? [
+        //         'mainbudget' => $user->profile->mainbudget ?? 0,
+        //         'currentspent' => $user->profile->currentspent ?? 0
+        //     ],
+        //     'mustVerifyEmail' => false,
+        //     'status' => session('status')
+        // ]);
 
-        return Inertia::render('larabudget/Profile', [
-            'profile' => [
+        $user = $request->user();
+
+        return response()->json([
+            'profile' => $user->profile ?? [
                 'mainbudget' => $user->profile->mainbudget ?? 0,
                 'currentspent' => $user->profile->currentspent ?? 0,
-                'remaining' => ($user->profile->mainbudget ?? 0) - ($user->profile->currentspent ?? 0),
-                'updated_at' => $user->profile->updated_at ?? null
             ],
-            'status' => session('status'),
+            'mustVerifyEmail' => false, 
+            'status' => session('status')
         ]);
+
+        // $user = auth()->user()->load('profile');
+        
+    } 
     }
-    
-}

@@ -39,12 +39,14 @@
                 <PencilIcon class="w-4 h-4 mr-2" />
                 Edit Budget
               </Button>
+              
             </DialogTrigger>
             <DialogContent class="sm:max-w-[425px]">
               <LaraProfileEditForm 
                 :initial-budget="mainBudget"
                 :initial-spent="currentSpent"
                 @saved="refreshProfile"
+                @vue:unmounted="refreshProfile"
               />
             </DialogContent>
           </Dialog>
@@ -55,8 +57,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue';
-import { Head } from '@inertiajs/vue3'
+import { computed, defineProps, onMounted, ref } from 'vue';
+import { Head, router } from '@inertiajs/vue3'
 import AppLayout from '@/layouts/AppLayout.vue'
 import { Button } from '@/components/ui/button'
 import { PencilIcon } from 'lucide-vue-next'
@@ -66,27 +68,26 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import LaraProfileEditForm from '@/components/LaraProfileEditForm.vue'
+import axios from 'axios';
 
 const breadcrumbs = [
   { title: 'Dashboard', href: route('dashboard') },
   { title: 'Budget Profile', href: route('larabudget.show') },
 ]
 
-const props = defineProps({
-    profile: {
-        type: Object,
-        required: true,
-        default: () => ({
-            mainbudget: 0,
-            currentspent: 0
-        })
-    },
-    mustVerifyEmail: Boolean,
-    status: String
+const profile = ref({ mainbudget: 0, currentspent: 0 });
+
+onMounted(async () => {
+  try{
+  const response = await axios.get('larabudget/profile');
+  profile.value = response.data.profile;
+  }catch (error){
+    console.error('Error getting yo profile cuh:', error);
+  }
 });
 
-const mainBudget = computed(() => Number(props.profile.mainbudget) || 0);
-const currentSpent = computed(() => Number(props.profile.currentspent) || 0);
+const mainBudget = computed(() => Number(profile.value.mainbudget) || 0);
+const currentSpent = computed(() => Number(profile.value.currentspent) || 0);
 const remainingBudget = computed(() => mainBudget.value - currentSpent.value);
 const budgetPercentage = computed(() => {
   return mainBudget.value > 0 ? (currentSpent.value / mainBudget.value) * 100 : 0;
@@ -95,4 +96,5 @@ const budgetPercentage = computed(() => {
 const refreshProfile = () => {
   window.location.reload();
 }
+
 </script>
