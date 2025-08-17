@@ -42,6 +42,12 @@
             <InputError :message="categoryForm.errors.name" />
           </div>
 
+          <div class="grid gap-2 px-4">
+            <Label for="budgetedAmount">Budgeted Amount</Label>
+            <Input id="budgetedAmount" v-model="categoryForm.budgeted_amount" placeholder="Allowance" />
+            <InputError :message="categoryForm.errors.name" />
+          </div>
+
           <DialogFooter class="gap-2 sm:justify-center">
             <DialogClose as-child>
               <Button variant="secondary" @click="closeCategoryModal, refreshProfile">Cancel</Button>
@@ -101,6 +107,7 @@ const submitProfile = () => {
 
 const categoryForm = useForm({
   name: '',
+  budgeted_amount: ''
 })
 
 const submitCategory = () => {

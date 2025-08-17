@@ -48,16 +48,6 @@ class UserProfileController extends Controller
 
     public function show(Request $request)
     {
-        // $user = $request->user();
-        // return inertia('larabudget\Profile', [
-        //     'profile' => $user->profile ?? [
-        //         'mainbudget' => $user->profile->mainbudget ?? 0,
-        //         'currentspent' => $user->profile->currentspent ?? 0
-        //     ],
-        //     'mustVerifyEmail' => false,
-        //     'status' => session('status')
-        // ]);
-
         $user = $request->user();
 
         return response()->json([
@@ -68,8 +58,5 @@ class UserProfileController extends Controller
             'mustVerifyEmail' => false, 
             'status' => session('status')
         ]);
-
-        // $user = auth()->user()->load('profile');
-        
     } 
     }

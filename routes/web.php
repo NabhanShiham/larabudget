@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\Larabudget;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -58,14 +59,19 @@ Route::middleware(['auth'])->prefix('larabudget')->group(function () {
         ->name('larabudget.show');
 });
 
-Route::middleware('auth')->group(function () {
-    Route::resource('categories', \App\Http\Controllers\larabudget\CategoryController::class)->except(['show']);
-
-    Route::post('/receipts', [\App\Http\Controllers\larabudget\ReceiptController::class, 'store']);
-    Route::delete('/receipts/{receipt}', [\App\Http\Controllers\larabudget\ReceiptController::class, 'destroy']);
-    Route::post('/categories/{category}/receipts', [ReceiptController::class, 'store']);
+Route::middleware(['auth'])->prefix('category')->group(function () {
+    Route::post('/create', [\App\Http\Controllers\larabudget\CategoryController::class, 'store'])
+        ->name('category.store');
+    Route::get('/show', [\App\Http\Controllers\larabudget\CategoryController::class, 'show'])
+        ->name('categories.show');
 });
 
+Route::middleware(['auth'])->prefix('purchases')->group(function (){
+    Route::post('/store', [\App\Http\Controllers\larabudget\PurchaseController::class, 'store'])
+        ->name('purchases.store');
+});
+
+        
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';

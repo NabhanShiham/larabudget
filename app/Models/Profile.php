@@ -11,7 +11,7 @@ class Profile extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',  // Add this
+        'user_id',  
         'mainbudget',
         'currentspent'
     ];

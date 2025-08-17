@@ -41,15 +41,26 @@ class CategoryController extends Controller
 
         auth()->user()->categories()->create($validated);
 
-        return redirect()->route('categories.index');
+        return redirect()->route('Spending');
     }
 
     /**
-     * Display the specified resource.
+     * Fetch categories that belong to the user
      */
-    public function show(Category $category)
+    public function show(Request $request)
     {
-        //
+        $user = $request->user();
+        $categories = $user->categories()->get()->map(function($category){
+            return [
+                'name' => $category->name,
+                'budgeted_amount' => $category->budgeted_amount,
+                'current_spent' => $category->current_spent
+            ];
+        });
+        return response()->json([
+            'categories' => $categories,
+            'status' => session('status')
+        ]);
     }
 
     /**

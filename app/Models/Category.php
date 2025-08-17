@@ -3,9 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 
 class Category extends Model
 {
+    use HasFactory;
+
+    protected $fillable = [
+        'name',  
+        'budgeted_amount',
+        'current_spent'
+    ];
     public function receipts(){
         return $this->hasMany(Receipt::class);
     }
