@@ -29,7 +29,7 @@ const props = defineProps({
   },
   delay: {
     type: Number,
-    default: 0.1, // delay between segments (seconds)
+    default: 0.1, 
   },
 });
 </script>
