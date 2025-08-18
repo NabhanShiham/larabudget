@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
 
 class CategoryController extends Controller
 {
+     use AuthorizesRequests;
     /**
      * Display a listing of the resource.
      */
@@ -41,7 +44,7 @@ class CategoryController extends Controller
 
         auth()->user()->categories()->create($validated);
 
-        return redirect()->route('Spending');
+        return redirect()->route('spending');
     }
 
     /**
@@ -94,10 +97,14 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        $this->authorize('delete', $category);
+        if(auth()->id() !== $category->user_id){
+            abort(403, 'Unauthorized action');
+        }
         $category->delete();
-        return redirect()->route('categories.index')
-            ->with('warning', 'Category deleted');
+        
+        return redirect()->route('spending')->with([
+                'success' => 'Category deleted successfully'
+            ]);
     }
 
     public static function find($id)

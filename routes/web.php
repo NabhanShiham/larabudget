@@ -64,6 +64,8 @@ Route::middleware(['auth'])->prefix('category')->group(function () {
         ->name('category.store');
     Route::get('/show', [\App\Http\Controllers\larabudget\CategoryController::class, 'show'])
         ->name('categories.show');
+    Route::delete('{category}', [\App\Http\Controllers\larabudget\CategoryController::class, 'destroy'])
+        ->name('category.delete');
 });
 
 Route::middleware(['auth'])->prefix('purchases')->group(function (){

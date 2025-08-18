@@ -97,6 +97,7 @@ const submitPurchase = () => {
     onSuccess: () => {
       form.reset()
       emit('purchase-created')
+    refreshProfile();
     }
   })
 }
