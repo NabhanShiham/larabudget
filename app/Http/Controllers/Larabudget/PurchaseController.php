@@ -30,13 +30,19 @@ public function store(Request $request)
     ]);
 
     $category = CategoryController::find($validated['category_id']);
-    // $category->increment('current_spent', $validated['amount']);
     $category->current_spent += $validated['amount'];
     $category->save();
 
-    return response()->json([
-        'purchase' => $purchase,
-        'category' => $category->fresh()
-    ]);
+    $profile = auth()->user()->profile;
+    $profile->currentspent += $validated['amount'];
+    $profile->save();
+
+    
+return response()->json([
+    'success' => true,
+    'purchase' => $purchase,
+    'category' => $category->fresh()
+], 200);
+
 }
 }

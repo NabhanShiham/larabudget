@@ -1,5 +1,5 @@
 <template>
-  <div class="border rounded-lg p-4" :class="{
+  <div class="border rounded-lg p-1 w-86" :class="{
     'border-green-200 bg-green-50 dark:bg-green-900/20 dark:border-green-800': isUnderBudget,
     'border-red-200 bg-red-50 dark:bg-red-900/20 dark:border-red-800': isOverBudget,
     'border-gray-200 dark:border-gray-700': !isUnderBudget && !isOverBudget

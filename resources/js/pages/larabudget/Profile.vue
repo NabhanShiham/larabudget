@@ -102,7 +102,6 @@ const budgetPercentage = computed(() => {
   return main > 0 ? (spent / main) * 100 : 0;
 });
 
-
 const refreshProfile = () => {
   window.location.reload();
 }

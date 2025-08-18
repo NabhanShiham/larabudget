@@ -25,7 +25,7 @@ const props = defineProps({
   },
   colors: {
     type: Array,
-    default: () => ["#3b82f6", "#e5e7eb", "#e5e7eb"], // blue + gray
+    default: () => ["#3b82f6", "#e5e7eb", "#e5e7eb"], 
   },
   delay: {
     type: Number,

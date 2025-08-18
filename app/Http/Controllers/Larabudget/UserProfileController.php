@@ -46,17 +46,33 @@ class UserProfileController extends Controller
             ->with('success', 'Budget updated successfully!');
     }
 
-    public function show(Request $request)
-    {
-        $user = $request->user();
 
-        return response()->json([
-            'profile' => $user->profile ?? [
-                'mainbudget' => $user->profile->mainbudget ?? 0,
-                'currentspent' => $user->profile->currentspent ?? 0,
-            ],
-            'mustVerifyEmail' => false, 
-            'status' => session('status')
-        ]);
-    } 
+public function show(Request $request)
+{
+    $user = $request->user();
+    $profile = $user->profile;
+
+    $totalSpent = $user->purchases()->sum('amount');
+
+    return response()->json([
+        'profile' => $profile ? [
+            'mainbudget' => $profile->mainbudget ?? 0,
+            'currentspent' => $totalSpent,
+        ] : [
+            'mainbudget' => 0,
+            'currentspent' => $totalSpent,
+        ],
+        'mustVerifyEmail' => false,
+        'status' => session('status')
+    ]);
+}
+
+
+    public static function find($id)
+    {
+        return auth()->user()
+            ->profiles()
+            ->with('user') 
+            ->findOrFail($id);
+    }
     }

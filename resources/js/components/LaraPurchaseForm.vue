@@ -48,7 +48,7 @@
       <Button
         type="button"
         variant="outline"
-        @click="$emit('cancel'), refreshProfile"
+        @click="$emit('cancel')"
       >
         Cancel
       </Button>
@@ -97,12 +97,7 @@ const submitPurchase = () => {
     onSuccess: () => {
       form.reset()
       emit('purchase-created')
-    refreshProfile();
     }
   })
-}
-
-const refreshProfile = () => {
-  window.location.reload();
 }
 </script>
