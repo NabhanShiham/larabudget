@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class PurchaseController extends Controller
 {
-    public function store(Request $request)
+public function store(Request $request)
 {
     $validated = $request->validate([
         'amount' => 'required|numeric|min:0.01',
@@ -18,14 +18,21 @@ class PurchaseController extends Controller
     ]);
 
     if ($request->hasFile('receipt')) {
-        $path = $request->file('receipt')->store('receipts');
-        $validated['receipt_path'] = $path;
+        $validated['receipt_path'] = $request->file('receipt')->store('receipts');
     }
 
-    $purchase = auth()->user()->purchases()->create($validated);
-    
-    $category = Category::find($validated['category_id']);
-    $category->increment('current_spent', $validated['amount']);
+    $purchase = auth()->user()->purchases()->create([
+        'category_id' => $validated['category_id'],
+        'amount' => $validated['amount'],
+        'description' => $validated['description'],
+        'transaction_date' => $validated['transaction_date'],
+        'receipt_path' => $validated['receipt_path'] ?? null
+    ]);
+
+    $category = CategoryController::find($validated['category_id']);
+    // $category->increment('current_spent', $validated['amount']);
+    $category->current_spent += $validated['amount'];
+    $category->save();
 
     return response()->json([
         'purchase' => $purchase,

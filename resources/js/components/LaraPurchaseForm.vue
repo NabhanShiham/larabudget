@@ -48,7 +48,7 @@
       <Button
         type="button"
         variant="outline"
-        @click="$emit('cancel')"
+        @click="$emit('cancel'), refreshProfile"
       >
         Cancel
       </Button>
@@ -62,6 +62,10 @@
 
 <script setup lang="ts">
 import { useForm } from '@inertiajs/vue3'
+import { Label } from 'reka-ui'
+import {Input } from '@/components/ui/input'
+import {Button} from '@/components/ui/button'
+import Spinner from './ui/spinner/Spinner.vue'
 
 const props = defineProps({
   categoryId: {
@@ -95,5 +99,9 @@ const submitPurchase = () => {
       emit('purchase-created')
     }
   })
+}
+
+const refreshProfile = () => {
+  window.location.reload();
 }
 </script>

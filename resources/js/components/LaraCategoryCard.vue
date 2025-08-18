@@ -116,6 +116,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import PurchaseForm from '@/components/LaraPurchaseForm.vue'
+import Icon from '@/components/Icon.vue'
 import { computed } from 'vue'
 
 const props = defineProps({
@@ -165,6 +166,7 @@ const isOverBudget = computed(() => {
 
 const handlePurchaseCreated = (updatedCategory: typeof props.category) => {
   emit('purchase-created', updatedCategory)
+  refreshProfile
 }
 
 const formatDate = (dateString: string) => {
@@ -172,5 +174,9 @@ const formatDate = (dateString: string) => {
     month: 'short',
     day: 'numeric'
   })
+}
+
+const refreshProfile = () => {
+  window.location.reload();
 }
 </script>

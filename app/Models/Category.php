@@ -10,6 +10,18 @@ class Category extends Model
 {
     use HasFactory;
 
+    public function purchases(){
+        return $this->hasMany(Purchase::class);
+    }
+
+    protected static function booted() {
+        static::updated(function ($category){
+            $category->update([
+                'current_spent' => $category->purchases()->sum('amount')
+            ]);
+        });
+    }
+
     protected $fillable = [
         'name',  
         'budgeted_amount',

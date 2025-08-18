@@ -52,6 +52,7 @@ class CategoryController extends Controller
         $user = $request->user();
         $categories = $user->categories()->get()->map(function($category){
             return [
+                'id' => $category->id,
                 'name' => $category->name,
                 'budgeted_amount' => $category->budgeted_amount,
                 'current_spent' => $category->current_spent
@@ -97,5 +98,13 @@ class CategoryController extends Controller
         $category->delete();
         return redirect()->route('categories.index')
             ->with('warning', 'Category deleted');
+    }
+
+    public static function find($id)
+    {
+        return auth()->user()
+            ->categories()
+            ->with('user') 
+            ->findOrFail($id);
     }
 }

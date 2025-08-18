@@ -35,6 +35,7 @@ const fetchCategories = async () => {
     isLoading.value = false
   }
 }
+
 </script>
 
 <template>
@@ -52,11 +53,11 @@ const fetchCategories = async () => {
                     <p>Categories</p>
                     <li v-for="category in categories" :key="category.id">
                         <CategoryCard :category="{
+                            id: category.id,
                             name: category.name,
                             budgeted_amount: category.budgeted_amount,
                             current_spent: category.current_spent,
                             }" />
-                    
                     </li>
                     <br>
             </div>
