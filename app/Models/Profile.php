@@ -9,7 +9,7 @@ class Profile extends Model
 {
 
     use HasFactory;
-
+    // TODO: change current spent to the sum of the amount col in purchases (the thing works on the frontend bc of a hack but this is poor quality)
     protected $fillable = [
         'user_id',  
         'mainbudget',

@@ -66,11 +66,14 @@ Route::middleware(['auth'])->prefix('category')->group(function () {
         ->name('categories.show');
     Route::delete('{category}', [\App\Http\Controllers\larabudget\CategoryController::class, 'destroy'])
         ->name('category.delete');
+    Route::get('{category}/purchases', [CategoryController::class, 'showCategoryPurchases'])
+    ->name('categories.purchases');
 });
 
 Route::middleware(['auth'])->prefix('purchases')->group(function (){
     Route::post('/store', [\App\Http\Controllers\larabudget\PurchaseController::class, 'store'])
         ->name('purchases.store');
+    Route::get('', [\App\Http\Controllers\larabudget\PurchaseController::class, 'showCategoryPurchases'])->name('purchases.index');
 });
 
         

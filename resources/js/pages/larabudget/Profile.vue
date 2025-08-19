@@ -6,9 +6,9 @@
     <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4 overflow-x-auto">
       <div class="relative min-h-[50vh] flex-1 rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-6">
-          <BudgetCard title="Main Budget" :amount="mainBudget" icon="dollar" />
-          <BudgetCard title="Current Spending" :amount="currentSpent" icon="shopping-cart" />
-          <BudgetCard title="Remaining" :amount="remainingBudget" :is-remaining="true" icon="wallet" />
+          <BudgetCard title="Main Budget" :amount="formattedMainBudget" icon="dollar" />
+          <BudgetCard title="Current Spending" :amount="formattedCurrentSpent" icon="shopping-cart" />
+          <BudgetCard title="Remaining" :amount="formattedRemainingBudget" :is-remaining="true" icon="wallet" />
         </div>
         <div class="mb-6">
           <div class="px-6 pb-6">
@@ -73,33 +73,23 @@ onMounted(async () => {
   }
 });
 
-
-const mainBudget = computed(() => {
+const formatCurrency = (value: number) => {
   return new Intl.NumberFormat('en-MV', {
     style: 'currency',
     currency: 'MVR'
-  }).format(Number(profile.value.mainbudget) || 0);
-});
+  }).format(value);
+};
 
-const currentSpent = computed(() => {
-  return new Intl.NumberFormat('en-MV', {
-    style: 'currency',
-    currency: 'MVR'
-  }).format(Number(profile.value.currentspent) || 0);
-});
+const mainBudget = computed(() => Number(profile.value.mainbudget) || 0);
+const currentSpent = computed(() => Number(profile.value.currentspent) || 0);
+const remainingBudget = computed(() => mainBudget.value - currentSpent.value);
 
-const remainingBudget = computed(() => {
-  const remaining = (Number(profile.value.mainbudget) || 0) - (Number(profile.value.currentspent) || 0);
-  return new Intl.NumberFormat('en-MV', {
-    style: 'currency',
-    currency: 'MVR'
-  }).format(remaining);
-});
+const formattedMainBudget = computed(() => formatCurrency(mainBudget.value));
+const formattedCurrentSpent = computed(() => formatCurrency(currentSpent.value));
+const formattedRemainingBudget = computed(() => formatCurrency(remainingBudget.value));
 
 const budgetPercentage = computed(() => {
-  const main = Number(profile.value.mainbudget) || 0;
-  const spent = Number(profile.value.currentspent) || 0;
-  return main > 0 ? (spent / main) * 100 : 0;
+  return mainBudget.value > 0 ? (currentSpent.value / mainBudget.value) * 100 : 0;
 });
 
 const refreshProfile = () => {

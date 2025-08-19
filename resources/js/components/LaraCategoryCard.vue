@@ -69,6 +69,75 @@
         {{ spentPercentage.toFixed(1) }}%
       </p>
     </div>
+<Dialog>
+      <DialogTrigger as-child>
+        <Button class="w-full">
+          <Paperclip class="w-4 h-4 mr-2" />
+          View Purchases ({{ filteredPurchases.length }})
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Receipts for {{ category.name }}</DialogTitle>
+          <DialogDescription v-if="filteredPurchases.length === 0">
+            No receipts available
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div class="mt-4 space-y-4 max-h-[60vh] overflow-y-auto">
+          <div v-for="purchase in recentPurchases" :key="purchase.id" 
+               class="p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+            <div class="flex justify-between items-center">
+              <div>
+                <p class="font-medium">Rf {{ purchase.amount }}</p>
+                <p class="text-sm text-muted-foreground">
+                  {{ purchase.description || 'No description' }}
+                </p>
+                <p class="text-xs text-muted-foreground mt-1">
+                  {{ formatDate(purchase.transaction_date || purchase.created_at) }}
+                </p>
+              </div>
+              <Button 
+                v-if="purchase.receipt_path" 
+                variant="outline" 
+                size="sm"
+                @click="viewReceipt(purchase.receipt_path)"
+              >
+                <EyeIcon class="h-4 w-4 mr-1" />
+                View
+              </Button>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+    <Dialog v-model:open="isReceiptDialogOpen">
+    <DialogContent class="sm:max-w-[90vw] max-h-[90vh]">
+      <div class="flex justify-between items-center mb-4">
+        <DialogTitle>Receipt</DialogTitle>
+        <Button variant="outline" size="sm" @click="downloadReceipt(currentReceipt)">
+          <DownloadIcon class="h-4 w-4 mr-1" />
+          Download
+        </Button>
+      </div>
+      
+      <div class="flex justify-center overflow-auto">
+        <iframe 
+          v-if="currentReceipt && currentReceipt.endsWith('.pdf')"
+          :src="`/storage/${currentReceipt}`"
+          class="w-full h-[70vh] border"
+          frameborder="0"
+        ></iframe>
+        
+        <img 
+          v-else-if="currentReceipt"
+          :src="`/storage/${currentReceipt}`"
+          class="max-w-full max-h-[70vh] object-contain"
+          alt="Receipt image"
+        />
+      </div>
+    </DialogContent>
+  </Dialog>
 
     <div class="mt-4">
       <Dialog>
@@ -87,7 +156,7 @@
             </DialogDescription>
           </DialogHeader>
           
-          <PurchaseForm 
+          <LaraPurchaseForm 
             :category-id="category.id" 
             @purchase-created="handlePurchaseCreated"
           />
@@ -95,19 +164,24 @@
       </Dialog>
     </div>
 
-    <div class="mt-4 space-y-2" v-if="recentPurchases.length > 0">
-      <h4 class="text-sm font-medium">Recent Purchases</h4>
-      <div v-for="purchase in recentPurchases" :key="purchase.id" class="text-sm">
+<div class="mt-4 space-y-2" v-if="recentPurchases.length > 0">
+      <h4 class="text-sm font-medium">Recent Activity</h4>
+      <div v-for="purchase in recentPurchases.slice(0, 2)" :key="purchase.id" class="text-sm">
         <div class="flex justify-between items-center py-1">
-          <div>
-            <span class="font-medium">${{ purchase.amount.toFixed(2) }}</span>
-            <span class="text-muted-foreground ml-2">{{ purchase.description || 'No description' }}</span>
+          <div class="flex items-center">
+            <span class="font-medium">Rf {{ purchase.amount }}</span>
+            <span class="text-muted-foreground ml-2 truncate max-w-[100px]">
+              {{ purchase.description || 'No description' }}
+            </span>
           </div>
-          <span class="text-xs text-muted-foreground">
+          <span class="text-xs text-muted-foreground whitespace-nowrap">
             {{ formatDate(purchase.transaction_date || purchase.created_at) }}
           </span>
         </div>
       </div>
+      <p v-if="recentPurchases.length > 2" class="text-xs text-muted-foreground text-center mt-1">
+        +{{ recentPurchases.length - 2 }} more
+      </p>
     </div>
   </div>
 
@@ -115,21 +189,12 @@
 </template>
 
 <script setup lang="ts">
-import { DeleteIcon, PlusIcon, TrashIcon } from 'lucide-vue-next'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import PurchaseForm from '@/components/LaraPurchaseForm.vue'
-import Icon from '@/components/Icon.vue'
-import { computed } from 'vue'
-import axios from 'axios'
-import { router } from '@inertiajs/vue3'
+import { Paperclip, PlusIcon, TrashIcon, EyeIcon, DownloadIcon } from 'lucide-vue-next';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { computed, ref } from 'vue';
+import { router } from '@inertiajs/vue3';
+import LaraPurchaseForm from './LaraPurchaseForm.vue';
 
 const props = defineProps({
   category: {
@@ -141,10 +206,6 @@ const props = defineProps({
     },
     required: true
   },
-  icon: {
-    type: String,
-    default: 'tag'
-  },
   recentPurchases: {
     type: Array as () => Array<{
       id: number
@@ -152,10 +213,49 @@ const props = defineProps({
       description: string
       transaction_date: string
       created_at: string
+      receipt_path: string | null
     }>,
     default: () => []
   }
 })
+
+const isReceiptDialogOpen = ref(false)
+const currentReceipt = ref('')
+const isAddPurchaseDialogOpen = ref(false)
+const showAllPurchases = ref(false)
+
+const filteredPurchases = computed(() => {
+  return props.recentPurchases || []
+})
+
+const visiblePurchases = computed(() => {
+  return showAllPurchases.value 
+    ? filteredPurchases.value 
+    : filteredPurchases.value.slice(0, 2)
+})
+
+const hasMorePurchases = computed(() => {
+  return filteredPurchases.value.length > 2
+})
+
+const hiddenPurchasesCount = computed(() => {
+  return filteredPurchases.value.length - 2
+})
+
+
+const viewReceipt = (receiptPath: string) => {
+  currentReceipt.value = receiptPath
+  isReceiptDialogOpen.value = true
+}
+
+const downloadReceipt = (receiptPath: string) => {
+  const link = document.createElement('a')
+  link.href = `/storage/${receiptPath}`
+  link.download = receiptPath.split('/').pop() || 'receipt'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+}
 
 const emit = defineEmits(['purchase-created', 'deleted'])
 

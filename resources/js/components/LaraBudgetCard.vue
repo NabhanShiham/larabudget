@@ -23,7 +23,7 @@ import { Currency } from 'lucide-vue-next';
 defineProps({
   title: String,
   amount: {
-    type: Currency,
+    type: String,
     default: 0
   },
   icon: {

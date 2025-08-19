@@ -7,6 +7,29 @@ use Illuminate\Http\Request;
 
 class PurchaseController extends Controller
 {
+    public function index(Request $request)
+{
+    $request->validate([
+        'category_ids' => 'required|string'
+    ]);
+
+    $categoryIds = explode(',', $request->category_ids);
+
+    return Purchase::whereIn('category_id', $categoryIds)
+        ->latest()
+        ->get()
+        ->map(function ($purchase) {
+            return [
+                'id' => $purchase->id,
+                'category_id' => $purchase->category_id,
+                'amount' => $purchase->amount,
+                'description' => $purchase->description,
+                'transaction_date' => $purchase->transaction_date,
+                'created_at' => $purchase->created_at,
+                'receipt_path' => $purchase->receipt_path 
+            ];
+        });
+}
 public function store(Request $request)
 {
     $validated = $request->validate([
@@ -45,4 +68,42 @@ return response()->json([
 ], 200);
 
 }
+
+public function showCategoryPurchases(Request $request)
+{
+    $user = $request->user();
+    $limit = 5; 
+    
+    $categories = $user->categories()
+        ->with(['purchases' => function($query) use ($limit) {
+            $query->latest()
+                ->take($limit)
+                ->select(['id', 'category_id', 'amount', 'description', 'transaction_date', 'created_at', 'receipt_path']);
+        }])
+        ->get()
+        ->map(function($category) {
+            return [
+                'id' => $category->id,
+                'name' => $category->name,
+                'budgeted_amount' => $category->budgeted_amount,
+                'current_spent' => $category->current_spent,
+                'purchases' => $category->purchases->map(function($purchase) {
+                    return [
+                        'id' => $purchase->id,
+                        'amount' => $purchase->amount,
+                        'description' => $purchase->description,
+                        'transaction_date' => $purchase->transaction_date,
+                        'created_at' => $purchase->created_at,
+                        'receipt_path' => $purchase->receipt_path,
+                    ];
+                })
+            ];
+        });
+    
+    return response()->json([
+        'categories' => $categories,
+        'status' => session('status')
+    ]);
+}
+
 }
