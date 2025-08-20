@@ -4,7 +4,11 @@ import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import PlaceholderPattern from '@/components/PlaceholderPattern.vue';
 import Button from '@/components/ui/button/Button.vue';
-
+import Dialog from '@/components/ui/dialog/Dialog.vue';
+import DialogContent from '@/components/ui/dialog/DialogContent.vue';
+import DialogTrigger from '@/components/ui/dialog/DialogTrigger.vue';
+import { PencilIcon, Search } from 'lucide-vue-next';
+import LaraAddFriendsForm from '@/components/LaraAddFriendsForm.vue';
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Friends',
@@ -23,17 +27,25 @@ const breadcrumbs: BreadcrumbItem[] = [
             </div>
             <div
                 class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
-                <PlaceholderPattern />
-                    <h1>Friends</h1>
-                <br>
+
+            <Dialog>
+            <DialogTrigger as-child>
+                <div class="flex flex-wrap justify-end gap-4 p-4">
+              <Button variant="default" size="lg">
+                <Search class="w-4 h-4 mr-2" />
+                Add Friends
+              </Button>
+              </div>
+
+            </DialogTrigger>
+            <DialogContent class="sm:max-w-[425px]">
+              <LaraAddFriendsForm />
+            </DialogContent>
+          </Dialog>
                 <div class="flex flex-wrap justify-center gap-4 p-4">
-                    <Button>
-                        Add Friends
-                    </Button>
-                </div>
-                <br>
                     <p>Friends List</p>
-                <br>
+                <!-- Add Friends list -->
+                </div>
             </div>
         </div>
     </AppLayout>

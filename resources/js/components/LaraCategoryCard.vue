@@ -243,20 +243,9 @@ const hiddenPurchasesCount = computed(() => {
   return filteredPurchases.value.length - 2
 })
 
-const getFilename = (path: string): string => {
-  return path.split('/').pop() || ''
-}
-
 const viewReceipt = (purchase: Object) => {
-  // console.log(purchase)
-  // const url = route(`purchases.receipt.view`, receipt_path)
-  // const resp = router.visit('/get-purchase-receipt/' + receipt_path)
-  // console.log(resp)
-  // currentReceipt.value = route(`purchases.receipt.view`, receipt_path)
-  // console.log(currentReceipt.value)
   axios.get('/get-receipt/' + purchase.id)
   .then(response => {
-    // console.log(response.data)
     currentReceipt.value = response.data.url
     console.log(currentReceipt.value)
   })
