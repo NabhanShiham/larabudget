@@ -99,5 +99,6 @@ const submitPurchase = () => {
       emit('purchase-created')
     }
   })
+  window.location.reload();
 }
 </script>

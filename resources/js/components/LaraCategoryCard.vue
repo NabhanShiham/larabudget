@@ -297,7 +297,6 @@ const handlePurchaseCreated = (updatedCategory: typeof props.category) => {
 }
 
 const handleCategoryDelete = () => {
-    if (confirm(`Are you sure you want to delete ${props.category.name}?`)) {
         router.delete(route('category.delete', { category: props.category.id }), {
             onSuccess: () => {
                 emit('deleted');
@@ -307,7 +306,6 @@ const handleCategoryDelete = () => {
                 console.error('Delete failed:', errors);
             }
         });
-    }
 };
 
 const formatDate = (dateString: string) => {
