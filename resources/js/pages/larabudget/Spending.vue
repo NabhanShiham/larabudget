@@ -40,40 +40,6 @@ onMounted(() => {
   fetchCategoriesWithPurchases();
 });
 
-// const fetchData = async () => {
-//   isLoading.value = true;
-//   try {
-//     const categoriesResponse = await axios.get(route('categories.show'));
-//     categories.value = categoriesResponse.data.categories;
-    
-//     const purchasesResponse = await axios.get(route('purchases.index'), {
-//       params: {
-//         category_ids: categories.value.map(c => c.id).join(',')
-//       }
-//     });
-
-//     console.log(purchasesResponse);
-//     const purchases = Array.isArray(purchasesResponse.data)
-//       ? purchasesResponse.data
-//       : purchasesResponse.data?.purchases || [];
-//     console.log(purchases)
-    
-
-//     purchases.forEach(purchase  => {
-//         const categoryId = purchase.category_id;
-//         if (!purchasesByCategory.value[categoryId]) {
-//           purchasesByCategory.value[categoryId] = [];
-//         }
-//         purchasesByCategory.value[categoryId].push(purchase);
-//       });
-//     console.log(purchasesByCategory);
-    
-//   } catch (err) {
-//     console.error('Error loading data:', err);
-//   } finally {
-//     isLoading.value = false;
-//   }
-// };
 const fetchCategoriesWithPurchases = async () => {
   isLoading.value = true;
   try {

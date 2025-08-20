@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Larabudget;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Storage;
+use App\Models\Purchase;
+
 class PurchaseController extends Controller
 {
     public function index(Request $request)
@@ -30,6 +33,21 @@ class PurchaseController extends Controller
             ];
         });
 }
+
+public function viewReceipt($id)
+{    
+
+    $purchase = Purchase::findOrFail($id);
+    $disk = Storage::disk("public");
+    // dd($receipt_path);
+    // $filePath = storage_path("app\\public\\". $purchase->receipt_path);
+    $filePath = $disk->url($purchase->receipt_path);
+
+    return response()->json([
+        'url' => $filePath
+    ]);
+}
+
 public function store(Request $request)
 {
     $validated = $request->validate([
@@ -40,8 +58,9 @@ public function store(Request $request)
         'receipt' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048'
     ]);
 
+    $disk = Storage::disk('public'); 
     if ($request->hasFile('receipt')) {
-        $validated['receipt_path'] = $request->file('receipt')->store('receipts');
+        $validated['receipt_path'] = $disk->put('receipts', $request->file('receipt'));
     }
 
     $purchase = auth()->user()->purchases()->create([

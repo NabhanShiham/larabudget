@@ -4,9 +4,12 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\Larabudget;
 
+
+
 Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
+
 
 Route::get('dashboard', function () {
     return Inertia::render('larabudget/Dashboard');
@@ -73,10 +76,18 @@ Route::middleware(['auth'])->prefix('category')->group(function () {
 Route::middleware(['auth'])->prefix('purchases')->group(function (){
     Route::post('/store', [\App\Http\Controllers\larabudget\PurchaseController::class, 'store'])
         ->name('purchases.store');
-    Route::get('', [\App\Http\Controllers\larabudget\PurchaseController::class, 'showCategoryPurchases'])->name('purchases.index');
+    Route::get('', [\App\Http\Controllers\larabudget\PurchaseController::class, 'showCategoryPurchases'])
+        ->name('purchases.index');
+
 });
 
-        
+Route::get('/get-receipt/{id}', [\App\Http\Controllers\larabudget\PurchaseController::class, 'viewReceipt'])
+    ->name('purchases.receipt.view');
+
+
+
+
+
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';

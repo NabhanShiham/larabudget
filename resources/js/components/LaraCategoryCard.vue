@@ -101,7 +101,7 @@
                 v-if="purchase.receipt_path" 
                 variant="outline" 
                 size="sm"
-                @click="viewReceipt(purchase.receipt_path)"
+                @click="viewReceipt(purchase)"
               >
                 <EyeIcon class="h-4 w-4 mr-1" />
                 View
@@ -122,16 +122,16 @@
       </div>
       
       <div class="flex justify-center overflow-auto">
-        <iframe 
+        <iframe
           v-if="currentReceipt && currentReceipt.endsWith('.pdf')"
-          :src="`/storage/${currentReceipt}`"
+          :src="currentReceipt"
           class="w-full h-[70vh] border"
           frameborder="0"
-        ></iframe>
-        
+        />
+
         <img 
           v-else-if="currentReceipt"
-          :src="`/storage/${currentReceipt}`"
+          :src="currentReceipt"
           class="max-w-full max-h-[70vh] object-contain"
           alt="Receipt image"
         />
@@ -195,6 +195,7 @@ import { Button } from '@/components/ui/button';
 import { computed, ref } from 'vue';
 import { router } from '@inertiajs/vue3';
 import LaraPurchaseForm from './LaraPurchaseForm.vue';
+import axios from 'axios';
 
 const props = defineProps({
   category: {
@@ -242,15 +243,30 @@ const hiddenPurchasesCount = computed(() => {
   return filteredPurchases.value.length - 2
 })
 
+const getFilename = (path: string): string => {
+  return path.split('/').pop() || ''
+}
 
-const viewReceipt = (receiptPath: string) => {
-  currentReceipt.value = receiptPath
-  isReceiptDialogOpen.value = true
+const viewReceipt = (purchase: Object) => {
+  // console.log(purchase)
+  // const url = route(`purchases.receipt.view`, receipt_path)
+  // const resp = router.visit('/get-purchase-receipt/' + receipt_path)
+  // console.log(resp)
+  // currentReceipt.value = route(`purchases.receipt.view`, receipt_path)
+  // console.log(currentReceipt.value)
+  axios.get('/get-receipt/' + purchase.id)
+  .then(response => {
+    // console.log(response.data)
+    currentReceipt.value = response.data.url
+    console.log(currentReceipt.value)
+  })
+
+  isReceiptDialogOpen.value = true;
 }
 
 const downloadReceipt = (receiptPath: string) => {
   const link = document.createElement('a')
-  link.href = `/storage/${receiptPath}`
+  link.href = receiptPath
   link.download = receiptPath.split('/').pop() || 'receipt'
   document.body.appendChild(link)
   link.click()

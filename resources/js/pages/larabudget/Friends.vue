@@ -3,6 +3,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import PlaceholderPattern from '@/components/PlaceholderPattern.vue';
+import Button from '@/components/ui/button/Button.vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -23,17 +24,15 @@ const breadcrumbs: BreadcrumbItem[] = [
             <div
                 class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
                 <PlaceholderPattern />
-                <center>
                     <h1>Friends</h1>
-                </center>
                 <br>
-                <center>
-                    <p>Add Friends</p>
-                </center>
+                <div class="flex flex-wrap justify-center gap-4 p-4">
+                    <Button>
+                        Add Friends
+                    </Button>
+                </div>
                 <br>
-                <center>
                     <p>Friends List</p>
-                </center>
                 <br>
             </div>
         </div>
