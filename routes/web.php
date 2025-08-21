@@ -84,7 +84,22 @@ Route::middleware(['auth'])->prefix('purchases')->group(function (){
 Route::get('/get-receipt/{id}', [\App\Http\Controllers\larabudget\PurchaseController::class, 'viewReceipt'])
     ->name('purchases.receipt.view');
 
+Route::get('/search', [\App\Http\Controllers\larabudget\FriendController::class, 'search'])
+    ->name('search.friends');
 
+Route::get('/get-user', [\App\Http\Controllers\larabudget\FriendController::class,'getCurrentUser'])
+    ->name('current.user');
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/friend-request/send', [\App\Http\Controllers\larabudget\FriendController::class, 'sendFriendRequest'])
+        ->name('friend.request.send');
+    Route::post('/friend-request/respond', [\App\Http\Controllers\larabudget\FriendController::class, 'respondToFriendRequest'])
+        ->name('friend.request.respond');
+    Route::get('/friend-requests/pending', [\App\Http\Controllers\larabudget\FriendController::class, 'pendingRequests'])
+        ->name('friend.requests.pending');
+    Route::get('/friends-list', [\App\Http\Controllers\larabudget\FriendController::class, 'listFriends'])
+        ->name('friends.list');
+});
 
 
 

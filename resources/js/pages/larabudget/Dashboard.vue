@@ -6,6 +6,7 @@ import PlaceholderPattern from '@/components/PlaceholderPattern.vue';
 import { computed, onMounted, ref } from 'vue';
 import axios from 'axios';
 import BudgetCard from '@/components/LaraBudgetCard.vue'
+import Echo from 'laravel-echo';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -23,6 +24,10 @@ onMounted(async () => {
   } catch (error) {
     console.error('Error getting yo profile cuh:', error);
   }
+  window.Echo.private(`user.${userId}`)
+    .listen('FriendRequestSent', (e) => {
+      console.log('Friend Request Received: ', e.message)
+    })
 });
 
 const mainBudget = computed(() => {

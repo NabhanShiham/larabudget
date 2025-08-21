@@ -75,4 +75,6 @@ public function show(Request $request)
             ->with('user') 
             ->findOrFail($id);
     }
-    }
+
+ 
+}
