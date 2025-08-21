@@ -7,6 +7,10 @@ import { computed, onMounted, ref } from 'vue';
 import axios from 'axios';
 import BudgetCard from '@/components/LaraBudgetCard.vue'
 import Echo from 'laravel-echo';
+import LaraNotificationBell from '@/components/LaraNotificationBell.vue';
+import DialogTrigger from '@/components/ui/dialog/DialogTrigger.vue';
+import DialogContent from '@/components/ui/dialog/DialogContent.vue';
+import Dialog from '@/components/ui/dialog/Dialog.vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -70,7 +74,7 @@ const refreshProfile = () => {
 
   <AppLayout :breadcrumbs="breadcrumbs">
     <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4 overflow-x-auto">
-      <div class="grid auto-rows-min gap-4 md:grid-cols-3">
+      <div class="grid auto-rows-min gap-4 md:grid-cols-4">
         <div
           class="grid relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 md:grid-cols-1 dark:border-sidebar-border">
           <center>
@@ -98,6 +102,7 @@ const refreshProfile = () => {
             <p>Collaborate</p>
           </center>
         </div>
+          <LaraNotificationBell />
       </div>
       <div
         class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">

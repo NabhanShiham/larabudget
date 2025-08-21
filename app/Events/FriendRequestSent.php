@@ -18,27 +18,37 @@ class FriendRequestSent implements ShouldBroadcast
     public function __construct(FriendRequest $friendRequest)
     {
         $this->friendRequest = $friendRequest;
+        $this->sender = $sender;
+        $this->recipient = $recipient;
+
+        $this->hideSensitiveData();
     }
 
     public function broadcastOn()
     {
-        return new PrivateChannel('user.' . $this->friendRequest->receiver_id);
+        return new Channel('notifications.' . $this->recipient->id);
+    }
+
+    public function broadcastAs()
+    {
+        return 'friend-request-sent';
     }
 
     public function broadcastWith()
     {
         return [
-            'friendRequest' => [
-                'id' => $this->friendRequest->id,
-                'sender' => [
-                    'id' => $this->friendRequest->sender->id,
-                    'name' => $this->friendRequest->sender->name,
-                    'email' => $this->friendRequest->sender->email,
-                ],
-                'receiver_id' => $this->friendRequest->receiver_id,
-                'status' => $this->friendRequest->status,
-                'created_at' => $this->friendRequest->created_at,
-            ]
+            'id' => $this->friendRequest->id,
+            'sender_name' => $this->sender->name,
+            'sender_id' => $this->sender->id,
+            'message' => "You have a new friend request from {$this->sender->name}",
+            'type' => 'friend_request',
+            'created_at' => now()->toDateTimeString(),
+            'read' => false
         ];
+    }
+        protected function hideSensitiveData()
+    {
+        unset($this->recipient->email, $this->recipient->password);
+        unset($this->sender->email, $this->sender->password);
     }
 }

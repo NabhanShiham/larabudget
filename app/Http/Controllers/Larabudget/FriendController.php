@@ -54,11 +54,7 @@ public function sendFriendRequest(Request $request)
 
         $friendRequest->load('sender', 'receiver');
 
-        try {
-            broadcast(new FriendRequestSent($friendRequest))->toOthers();
-        } catch (\Exception $e) {
-            \Log::error('Broadcasting failed: ' . $e->getMessage());
-        }
+        NotificationService::sendFriendRequestNotification($friendRequest, $sender, $recipient);
 
         return response()->json([
             'message' => 'Friend request sent successfully',

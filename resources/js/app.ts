@@ -84,6 +84,9 @@ createInertiaApp({
       .use(ZiggyVue);
     
     app.mount(el);
+    if ('Notification' in window) {
+        Notification.requestPermission();
+  }
   },
   progress: {
     color: '#4B5563',
