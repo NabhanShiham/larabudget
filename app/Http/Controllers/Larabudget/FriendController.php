@@ -8,6 +8,7 @@ use Inertia\Inertia;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Models\FriendRequest;
+use App\Events\FriendRequestSent;
 
 
 class FriendController extends Controller
@@ -30,31 +31,47 @@ class FriendController extends Controller
 
 public function sendFriendRequest(Request $request)
 {
-    $user = $request->user();
+    try {
+        $validated = $request->validate([
+            'receiver_id' => 'required|exists:users,id'
+        ]);
 
-    $validated = $request->validate([
-        'receiver_id' => 'required|exists:users,id',
-    ]);
+        $existingRequest = FriendRequest::where('sender_id', auth()->id())
+            ->where('receiver_id', $validated['receiver_id'])
+            ->first();
 
-    if ($user->id === (int) $validated['receiver_id']) {
-        return response()->json(['message' => 'You cannot send a request to yourself.'], 400);
+        if ($existingRequest) {
+            return response()->json([
+                'message' => 'Friend request already sent'
+            ], 422);
+        }
+
+        $friendRequest = FriendRequest::create([
+            'sender_id' => auth()->id(),
+            'receiver_id' => $validated['receiver_id'],
+            'status' => 'pending'
+        ]);
+
+        $friendRequest->load('sender', 'receiver');
+
+        try {
+            broadcast(new FriendRequestSent($friendRequest))->toOthers();
+        } catch (\Exception $e) {
+            \Log::error('Broadcasting failed: ' . $e->getMessage());
+        }
+
+        return response()->json([
+            'message' => 'Friend request sent successfully',
+            'friendRequest' => $friendRequest
+        ], 200);
+
+    } catch (\Exception $e) {
+        \Log::error('Friend request error: ' . $e->getMessage());
+        return response()->json([
+            'message' => 'Error sending friend request',
+            'error' => config('app.debug') ? $e->getMessage() : 'Server error'
+        ], 500);
     }
-
-    $existing = FriendRequest::where('sender_id', $user->id)
-        ->where('receiver_id', $validated['receiver_id'])
-        ->first();
-
-    if ($existing) {
-        return response()->json(['message' => 'Friend request already sent.'], 200);
-    }
-
-    FriendRequest::create([
-        'sender_id' => $user->id,
-        'receiver_id' => $validated['receiver_id'],
-        'status' => 'pending',
-    ]);
-    event(new FriendRequestSent($user, $receiver));
-    return response()->json(['message' => 'Friend request sent.']);
 }
 
 

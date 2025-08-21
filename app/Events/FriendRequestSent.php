@@ -2,9 +2,8 @@
 
 namespace App\Events;
 
-use Illuminate\Broadcasting\Channel;
+use App\Models\FriendRequest; // Add this import
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -14,34 +13,32 @@ class FriendRequestSent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public $friendRequest;
 
-    public $sender;
-    public $receiver;
-
-    /**
-     * Create a new event instance.
-     */
-    public function __construct()
+    public function __construct(FriendRequest $friendRequest)
     {
-        $this->sender = $sender; 
-        $this->receiver = $receiver;
+        $this->friendRequest = $friendRequest;
     }
 
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
-     */
-    public function broadcastOn(): array
+    public function broadcastOn()
     {
-        return new PrivateChannel('user' . $this->receiver->id);
+        return new PrivateChannel('user.' . $this->friendRequest->receiver_id);
     }
 
-    public function broadcastWith(){
+    public function broadcastWith()
+    {
         return [
-            'message' => "{$this->sender->name} sent you a friend request.",
-            'sender_id' => $this->sender->id,
-            'sender_name' => $this->sender->name,
+            'friendRequest' => [
+                'id' => $this->friendRequest->id,
+                'sender' => [
+                    'id' => $this->friendRequest->sender->id,
+                    'name' => $this->friendRequest->sender->name,
+                    'email' => $this->friendRequest->sender->email,
+                ],
+                'receiver_id' => $this->friendRequest->receiver_id,
+                'status' => $this->friendRequest->status,
+                'created_at' => $this->friendRequest->created_at,
+            ]
         ];
     }
 }
