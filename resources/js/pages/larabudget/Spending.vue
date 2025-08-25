@@ -74,6 +74,7 @@ const fetchCategoriesWithPurchases = async () => {
 
 <template>
 <Head title="Spending" />
+<div class="flex">
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4 overflow-x-auto">
             <div v-if="isLoading" class="flex justify-center p-8">
@@ -95,4 +96,5 @@ const fetchCategoriesWithPurchases = async () => {
             </div>
         </div>
     </AppLayout>
+</div>
 </template>

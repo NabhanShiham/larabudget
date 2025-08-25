@@ -74,4 +74,13 @@ class User extends Authenticatable
     public function receivedFriendRequests(){
         return $this->hasMany(FriendRequest::class, 'receiver_id');
     }
+    public function ownedCollaborations(){
+        return $this->hasMany(Collaborate::class, 'owner_id');
+    }
+    public function collaborations(){
+        return $this->belongsToMany(Collaborate::class, 'collaborate_user', 'user_id', 'collaborate_id')->withTimestamps();
+    }
+    public function contributions(){
+        return $this->hasMany(Contribution::class);
+    }
 }

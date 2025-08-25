@@ -14,6 +14,7 @@ import type { BreadcrumbItem, NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
 import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-vue-next';
 import { computed } from 'vue';
+import LaraNotificationBell from '@/components/LaraNotificationBell.vue';
 
 interface Props {
     breadcrumbs?: BreadcrumbItem[];

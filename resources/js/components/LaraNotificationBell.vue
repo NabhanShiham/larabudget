@@ -1,57 +1,53 @@
 <template>
-  <div class="notification-container">
-    <button @click="toggleNotifications" class="notification-bell">
-      <span class="bell-icon">🔔</span>
-      <span v-if="unreadCount > 0" class="badge">{{ unreadCount }}</span>
+  <div class="relative">
+    <button @click="toggleNotifications" class="relative text-gray-600 hover:text-gray-800">
+      <span class="text-xl">🔔</span>
+      <span v-if="unreadCount > 0" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1">
+        {{ unreadCount }}
+      </span>
     </button>
 
-    <div v-if="showNotifications" class="notification-dropdown">
-      <div class="notification-header">
-        <h3>Notifications</h3>
-        <button @click="markAllAsRead" class="mark-all-read">
-          Mark all as read
-        </button>
-      </div>
+    <transition name="fade">
+      <div v-if="showNotifications" class="absolute right-0 mt-2 w-96 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+        <div class="p-4 border-b border-gray-100 flex justify-between items-center">
+          <h3 class="text-lg font-semibold">Notifications</h3>
+          <button @click="markAllAsRead" class="text-sm text-blue-500 hover:underline">Mark all as read</button>
+        </div>
 
-      <div v-if="notifications.length === 0" class="empty-state">
-        No notifications
-      </div>
+        <div class="max-h-80 overflow-y-auto">
+          <div v-if="notifications.length === 0" class="p-4 text-gray-500 text-center">
+            No notifications
+          </div>
 
-      <div v-else class="notification-list">
-        <div 
-          v-for="notification in notifications" 
-          :key="notification.id"
-          :class="['notification-item', { unread: !notification.read }]"
-        >
-          <div class="notification-type" :class="notification.type">
-            {{ getNotificationTypeLabel(notification.type) }}
-          </div>
-          <div class="notification-content">
-            <div class="notification-title">{{ notification.title }}</div>
-            <div class="notification-message">{{ notification.message }}</div>
-            
-            <div v-if="notification.type === 'friend_request'" class="friend-request-actions">
-              <button @click="acceptFriendRequest(notification)" class="btn-accept">
-                Accept
-              </button>
-              <button @click="declineFriendRequest(notification)" class="btn-decline">
-                Decline
-              </button>
+          <div v-else>
+            <div 
+              v-for="notification in notifications" 
+              :key="notification.id"
+              :class="['p-4 border-b border-gray-100 flex justify-between items-start', { 'bg-gray-50': !notification.read }]"
+            >
+              <div class="flex-1">
+                <div class="text-sm font-medium text-gray-700">
+                  {{ getNotificationTypeLabel(notification.type) }}
+                </div>
+                <div class="text-sm text-gray-600">{{ notification.title }}</div>
+                <div class="text-sm text-gray-500">{{ notification.message }}</div>
+
+                <div v-if="notification.type === 'friend_request'" class="mt-2 flex gap-2">
+                  <button @click="acceptFriendRequest(notification)" class="px-2 py-1 text-xs bg-green-500 text-white rounded">Accept</button>
+                  <button @click="declineFriendRequest(notification)" class="px-2 py-1 text-xs bg-red-500 text-white rounded">Decline</button>
+                </div>
+
+                <div class="text-xs text-gray-400 mt-1">
+                  {{ formatTime(notification.created_at) }}
+                </div>
+              </div>
+
+              <button @click="deleteNotification(notification)" class="text-gray-400 hover:text-red-500 text-lg ml-2">×</button>
             </div>
-            
-            <div class="notification-time">
-              {{ formatTime(notification.created_at) }}
-            </div>
           </div>
-          <button 
-            @click="deleteNotification(notification)"
-            class="delete-btn"
-          >
-            ×
-          </button>
         </div>
       </div>
-    </div>
+    </transition>
   </div>
 </template>
 
@@ -220,42 +216,10 @@ export default {
 </script>
 
 <style scoped>
-.friend-request-actions {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.2s ease;
 }
-
-.btn-accept {
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  padding: 0.3rem 0.8rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.8rem;
-}
-
-.btn-decline {
-  background-color: #f44336;
-  color: white;
-  border: none;
-  padding: 0.3rem 0.8rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.8rem;
-}
-
-.btn-accept:hover {
-  background-color: #45a049;
-}
-
-.btn-decline:hover {
-  background-color: #d32f2f;
-}
-
-.notification-type.friend_request {
-  background: #e8f5e8;
-  color: #2e7d32;
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
 }
 </style>

@@ -108,6 +108,9 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/notifications/{id}', [NotificationController::class, 'destroy']);
 });
 
+Route::resource('collaborations', CollaborateController::class)->middleware(['auth']);
+Route::post('/contributions', [ContributionController::class, 'store'])->name('contributions.store');
+
 
 
 

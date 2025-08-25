@@ -39,8 +39,6 @@ public function viewReceipt($id)
 
     $purchase = Purchase::findOrFail($id);
     $disk = Storage::disk("public");
-    // dd($receipt_path);
-    // $filePath = storage_path("app\\public\\". $purchase->receipt_path);
     $filePath = $disk->url($purchase->receipt_path);
 
     return response()->json([

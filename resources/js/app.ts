@@ -73,7 +73,7 @@ if (pusherKey && pusherKey === '30e66a7ce4a62122a6ed') {
   console.warn('Pusher app key not found or is default. Real-time features disabled.');
 }
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const appName = import.meta.env.VITE_APP_NAME || 'Larabudget';
 
 createInertiaApp({
   title: (title) => (title ? `${title} - ${appName}` : appName),

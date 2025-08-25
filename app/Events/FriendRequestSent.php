@@ -46,7 +46,7 @@ class FriendRequestSent implements ShouldBroadcast
             'read' => false
         ];
     }
-        protected function hideSensitiveData()
+    protected function hideSensitiveData()
     {
         unset($this->recipient->email, $this->recipient->password);
         unset($this->sender->email, $this->sender->password);
