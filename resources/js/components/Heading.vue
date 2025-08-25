@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import LaraNotificationBell from '@/components/LaraNotificationBell.vue';
+
 
 interface Props {
     title: string;
@@ -14,7 +14,6 @@ defineProps<Props>();
         <h2 class="text-xl font-semibold tracking-tight">{{ title }}</h2>
         <p v-if="description" class="text-sm text-muted-foreground">
             {{ description }}
-          <LaraNotificationBell />
         </p>
     </div>
 </template>

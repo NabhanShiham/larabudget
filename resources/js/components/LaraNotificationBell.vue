@@ -121,13 +121,13 @@ export default {
       }
     },
 
+    // take request_id, query from db and then accept
     async acceptFriendRequest(notification) {
       try {
-        await axios.post('/friend-requests/respond', {
-          request_id: notification.data.request_id, // Assuming you store request_id in notification data
+        await axios.post(route('friend.request.respond'), {
+          request_id: notification.data.request_id, 
           action: 'accept'
         });
-        
         this.notifications = this.notifications.filter(n => n.id !== notification.id);
         this.unreadCount--;
         
@@ -136,6 +136,7 @@ export default {
       }
     },
 
+    // same thing here mibomboclaaaa probably need to edit notification migration add request_id to notification
     async declineFriendRequest(notification) {
       try {
         await axios.post('/friend-requests/respond', {

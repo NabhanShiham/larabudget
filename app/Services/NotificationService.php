@@ -30,15 +30,16 @@ class NotificationService
         return $notification;
     }
 
-    public static function sendFriendRequestNotification($friendRequest, $sender, $receiver)
+    public static function sendFriendRequestNotification($friendRequest, $sender, $receiver, $request_id)
 {
     $notification = Notification::create([
+        'request_id' => $request_id,
         'user_id' => $receiver->id,
         'title' => 'New Friend Request',
         'message' => "You have a new friend request from: {$sender->name}",
         'type' => 'friend_request',
     ]);
-    
+
     return $notification;
 }
 }

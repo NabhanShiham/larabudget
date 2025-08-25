@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('collaborate', function (Blueprint $table) {
             $table->id();
             $table->foreignId('ownerId')->constrained('users')->onDelete('cascade');
-            // $table->string(['memberIds']); // wanna make a column which stores the IDs of members for each row but this violated 1NF so make pivot table
             $table->float('goal')->default(0.00);
             $table->float('currentProgress')->default(0.00);
             $table->enum('status', ['pending', 'accepted', 'rejected'])->default('pending');  

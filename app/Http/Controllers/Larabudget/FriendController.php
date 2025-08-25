@@ -75,7 +75,7 @@ public function sendFriendRequest(Request $request)
             'receiver' => $receiver->id
         ]);
 
-        NotificationService::sendFriendRequestNotification($friendRequest, $friendRequest->sender, $friendRequest->receiver);
+        NotificationService::sendFriendRequestNotification($friendRequest, $friendRequest->sender, $friendRequest->receiver, $friendRequest->id);
 
         return response()->json([
             'message' => 'Friend request sent successfully',
