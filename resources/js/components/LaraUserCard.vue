@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between">
       <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">
         <slot name="title">
-          {{ User.name }}
+          {{ User.name }} 
         </slot>
       </h3>
       <Button class="ml-4" @click="handleAddFriend()">Add Friend</Button>
@@ -15,7 +15,6 @@
 <script setup lang="ts">
 import Button from './ui/button/Button.vue'
 import axios from 'axios'
-import { ref } from 'vue'
 
 const props = defineProps({
   User: {
@@ -31,8 +30,7 @@ const props = defineProps({
 const handleAddFriend = async () => {
     try {
         const response = await axios.post(route('friend.request.send'), { receiver_id: props.User.id })
-        console.log(props.User.id);
-        console.log('Friend Request Sent', response.data);
+        console.log('Successfully added your friend buddy. Congrats: ', response.data);
     }catch (error){
         console.log('Error adding yo friend brev', error);
     }

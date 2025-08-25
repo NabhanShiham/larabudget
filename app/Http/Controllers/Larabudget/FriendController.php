@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Models\FriendRequest;
 use App\Events\FriendRequestSent;
+use App\Services\NotificationService;
 
 
 class FriendController extends Controller
@@ -32,6 +33,12 @@ class FriendController extends Controller
 public function sendFriendRequest(Request $request)
 {
     try {
+        if (!auth()->check()) {
+            return response()->json([
+                'message' => 'Unauthenticated'
+            ], 401);
+        }
+
         $validated = $request->validate([
             'receiver_id' => 'required|exists:users,id'
         ]);
@@ -46,15 +53,29 @@ public function sendFriendRequest(Request $request)
             ], 422);
         }
 
+        
+        $receiver = User::find($validated['receiver_id']);
+
+        if (!$receiver) {
+            return response()->json([
+                'message' => 'Recipient not found'
+            ], 404);
+        }
+
         $friendRequest = FriendRequest::create([
-            'sender_id' => auth()->id(),
-            'receiver_id' => $validated['receiver_id'],
+            'sender_id' => auth()->user()->id,
+            'receiver_id' => $receiver->id,
             'status' => 'pending'
         ]);
 
         $friendRequest->load('sender', 'receiver');
+        \Log::debug('Sending notification with:', [
+            'friendRequest' => $friendRequest->id,
+            'sender' => auth()->user()->id,
+            'receiver' => $receiver->id
+        ]);
 
-        NotificationService::sendFriendRequestNotification($friendRequest, $sender, $recipient);
+        NotificationService::sendFriendRequestNotification($friendRequest, $friendRequest->sender, $friendRequest->receiver);
 
         return response()->json([
             'message' => 'Friend request sent successfully',

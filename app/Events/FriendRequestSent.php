@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\Models\FriendRequest; // Add this import
+use App\Models\FriendRequest; 
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -19,14 +19,14 @@ class FriendRequestSent implements ShouldBroadcast
     {
         $this->friendRequest = $friendRequest;
         $this->sender = $sender;
-        $this->recipient = $recipient;
+        $this->receiver = $receiver;
 
         $this->hideSensitiveData();
     }
 
     public function broadcastOn()
     {
-        return new Channel('notifications.' . $this->recipient->id);
+        return new Channel('notifications.' . $this->receiver->id);
     }
 
     public function broadcastAs()
@@ -48,7 +48,7 @@ class FriendRequestSent implements ShouldBroadcast
     }
     protected function hideSensitiveData()
     {
-        unset($this->recipient->email, $this->recipient->password);
+        unset($this->receiver->email, $this->receiver->password);
         unset($this->sender->email, $this->sender->password);
     }
 }

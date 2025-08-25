@@ -56,7 +56,6 @@ import Pusher from 'pusher-js';
 import axios from 'axios';
 
 const userId = localStorage.getItem('user_id');
-console.log(userId)
 
 export default {
   data() {
@@ -69,9 +68,12 @@ export default {
   },
 
   computed: {
-    unreadCount() {
-      return this.notifications.filter(n => !n.read).length;
-    }
+    unreadCount() {      
+    return Array.isArray(this.notifications)
+          ? this.notifications.filter(n => !n.read).length
+          : 0;
+
+        }
   },
 
   async mounted() {
@@ -139,7 +141,7 @@ export default {
 
     async acceptFriendRequest(notification) {
       try {
-        const response = await axios.post('/api/friend-requests/accept', {
+        const response = await axios.post('/friend-requests/accept', {
           friend_request_id: notification.data.friend_request_id || notification.id
         });
         
@@ -156,7 +158,7 @@ export default {
 
     async declineFriendRequest(notification) {
       try {
-        const response = await axios.post('/api/friend-requests/decline', {
+        const response = await axios.post('/friend-requests/decline', {
           friend_request_id: notification.data.friend_request_id || notification.id
         });
         
@@ -174,7 +176,7 @@ export default {
     async markAsRead(notification) {
       if (!notification.read) {
         try {
-          await axios.put(`/api/notifications/${notification.id}/read`);
+          await axios.put(`/notifications/${notification.id}/read`);
           notification.read = true;
         } catch (error) {
           console.error('Error marking as read:', error);
@@ -184,7 +186,7 @@ export default {
 
     async markAllAsRead() {
       try {
-        await axios.put('/api/notifications/read-all');
+        await axios.put('/notifications/read-all');
         this.notifications.forEach(n => n.read = true);
       } catch (error) {
         console.error('Error marking all as read:', error);
@@ -193,7 +195,7 @@ export default {
 
     async deleteNotification(notification) {
       try {
-        await axios.delete(`/api/notifications/${notification.id}`);
+        await axios.delete(`/notifications/${notification.id}`);
         this.notifications = this.notifications.filter(n => n.id !== notification.id);
       } catch (error) {
         console.error('Error deleting notification:', error);

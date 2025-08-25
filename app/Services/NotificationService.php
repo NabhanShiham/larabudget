@@ -4,12 +4,12 @@ namespace App\Services;
 
 use App\Models\Notification;
 use App\Events\NotificationEvent;
+use App\Events\FriendRequestSent;
 
 class NotificationService
 {
     public static function send($userId, $title, $message, $type = 'info')
     {
-        // Save to database
         $notification = Notification::create([
             'user_id' => $userId,
             'title' => $title,
@@ -17,7 +17,6 @@ class NotificationService
             'type' => $type
         ]);
 
-        // Broadcast via Pusher
         event(new NotificationEvent([
             'id' => $notification->id,
             'user_id' => $userId,
@@ -31,12 +30,12 @@ class NotificationService
         return $notification;
     }
 
-    public static function sendFriendRequestNotification($friendRequest, $sender, $recipient)
+    public static function sendFriendRequestNotification($friendRequest, $sender, $receiver)
 {
     $notification = Notification::create([
-        'user_id' => $recipient->id,
+        'user_id' => $receiver->id,
         'title' => 'New Friend Request',
-        'message' => "You have a new friend request from {$sender->name}",
+        'message' => "You have a new friend request from: {$sender->name}",
         'type' => 'friend_request',
         'data' => json_encode([
             'friend_request_id' => $friendRequest->id,
@@ -45,7 +44,7 @@ class NotificationService
         ])
     ]);
 
-    event(new FriendRequestSent($friendRequest, $sender, $recipient));
+    event(new FriendRequestSent($friendRequest, $sender, $receiver));
 
     return $notification;
 }
