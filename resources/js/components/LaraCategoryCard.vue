@@ -220,6 +220,15 @@ const props = defineProps({
   }
 })
 
+interface Purchase {
+    id: number
+    amount: number
+    description: string
+    transaction_date:string
+    created_at: string
+    receipt_path: string | null
+}
+
 const isReceiptDialogOpen = ref(false)
 const currentReceipt = ref('')
 const isAddPurchaseDialogOpen = ref(false)
@@ -243,11 +252,10 @@ const hiddenPurchasesCount = computed(() => {
   return filteredPurchases.value.length - 2
 })
 
-const viewReceipt = (purchase: Object) => {
+const viewReceipt = (purchase: Purchase) => {
   axios.get('/get-receipt/' + purchase.id)
   .then(response => {
     currentReceipt.value = response.data.url
-    console.log(currentReceipt.value)
   })
 
   isReceiptDialogOpen.value = true;

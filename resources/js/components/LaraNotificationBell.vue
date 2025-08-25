@@ -2,15 +2,15 @@
   <div class="relative">
     <button @click="toggleNotifications" class="relative text-gray-600 hover:text-gray-800">
       <span class="text-xl">🔔</span>
-      <span v-if="unreadCount > 0" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1">
+      <span v-if="unreadCount > 0" class="absolute right-0 mt-2 w-96 bg-background border border-secondary rounded-lg shadow-lg z-50">
         {{ unreadCount }}
       </span>
     </button>
 
     <transition name="fade">
       <div v-if="showNotifications" class="absolute right-0 mt-2 w-96 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-        <div class="p-4 border-b border-gray-100 flex justify-between items-center">
-          <h3 class="text-lg font-semibold">Notifications</h3>
+        <div class="p-4 border-b border-secondary flex justify-between items-center">
+          <h3 class="text-lg font-semibold text-primary">Notifications</h3>
           <button @click="markAllAsRead" class="text-sm text-blue-500 hover:underline">Mark all as read</button>
         </div>
 
@@ -53,6 +53,10 @@
 
 <script>
 import Pusher from 'pusher-js';
+import axios from 'axios';
+
+const userId = localStorage.getItem('user_id');
+console.log(userId)
 
 export default {
   data() {
@@ -92,12 +96,16 @@ export default {
     },
 
     initializePusher() {
-      this.pusher = new Pusher(process.env.VUE_APP_PUSHER_APP_KEY, {
-        cluster: process.env.VUE_APP_PUSHER_APP_CLUSTER,
+      try {
+      this.pusher = new Pusher(import.meta.env.VITE_PUSHER_APP_KEY, {
+        cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
         forceTLS: true
       });
+      }catch (error){
+        console.log("Error Initializing Pusher", error);
+      }
 
-      this.channel = this.pusher.subscribe(`notifications.${this.$store.state.user.id}`);
+      this.channel = this.pusher.subscribe(`notifications.${userId}`);
       
       this.channel.bind('new-notification', (data) => {
         this.notifications.unshift(data);

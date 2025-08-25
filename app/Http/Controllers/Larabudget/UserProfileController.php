@@ -56,6 +56,7 @@ public function show(Request $request)
 
     return response()->json([
         'profile' => $profile ? [
+            'user_id' => $user->id,
             'mainbudget' => $profile->mainbudget ?? 0,
             'currentspent' => $totalSpent,
         ] : [

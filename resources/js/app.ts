@@ -14,13 +14,9 @@ declare global {
   }
 }
 
-// Enable Pusher debugging
-Pusher.logToConsole = process.env.NODE_ENV === 'development';
 
 window.Pusher = Pusher;
 
-// const pusherKey = import.meta.env.VITE_PUSHER_APP_KEY;
-// const pusherCluster = import.meta.env.VITE_PUSHER_APP_CLUSTER || 'ap2';
 const pusherKey = '30e66a7ce4a62122a6ed';
 const pusherCluster = 'ap2';
 

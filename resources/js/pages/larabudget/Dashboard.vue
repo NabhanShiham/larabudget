@@ -20,16 +20,18 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const profile = ref({ mainbudget: 0, currentspent: 0 });
+const user_id = ref('');
 
 onMounted(async () => {
   try {
     const response = await axios.get('larabudget/profile');
     profile.value = response.data.profile;
+    localStorage.setItem('user_id', response.data.profile.user_id);
   } catch (error) {
     console.error('Error getting yo profile cuh:', error);
   }
-  window.Echo.private(`user.${userId}`)
-    .listen('FriendRequestSent', (e) => {
+  window.Echo.private(`user.${user_id}`)
+    .listen('FriendRequestSent', (e: { message: any; }) => {
       console.log('Friend Request Received: ', e.message)
     })
 });

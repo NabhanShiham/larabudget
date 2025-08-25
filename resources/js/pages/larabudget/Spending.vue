@@ -19,6 +19,7 @@ interface Category {
     name: string;
     budgeted_amount: number;
     current_spent: number;
+    purchases: Record<number, Purchase[]>
 }
 
 interface Purchase {
