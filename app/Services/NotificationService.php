@@ -37,15 +37,8 @@ class NotificationService
         'title' => 'New Friend Request',
         'message' => "You have a new friend request from: {$sender->name}",
         'type' => 'friend_request',
-        'data' => json_encode([
-            'friend_request_id' => $friendRequest->id,
-            'sender_id' => $sender->id,
-            'sender_name' => $sender->name
-        ])
     ]);
-
-    event(new FriendRequestSent($friendRequest, $sender, $receiver));
-
+    
     return $notification;
 }
 }
