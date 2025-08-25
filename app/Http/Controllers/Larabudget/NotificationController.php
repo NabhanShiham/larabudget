@@ -1,9 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Larabudget;
 
-use App\Models\Notification;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Notification;
+use App\Events\NotificationEvent;
 
 class NotificationController extends Controller
 {
@@ -12,8 +17,15 @@ class NotificationController extends Controller
         $notifications = Notification::where('user_id', auth()->id())
             ->orderBy('created_at', 'desc')
             ->get();
-
-        return response()->json($notifications);
+        if($notifications->isEmpty()){
+            return response()->json([
+                'message' => 'No notifications found.',
+                'notifications' => [],
+            ], 200);
+        }
+        return response()->json([
+            'notifications' => $notifications
+        ], 200);
     }
 
     public function markAsRead($id)

@@ -83,4 +83,7 @@ class User extends Authenticatable
     public function contributions(){
         return $this->hasMany(Contribution::class);
     }
+    public function notifications(){
+        return $this->hasMany(Notification::class);
+    }
 }

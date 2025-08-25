@@ -31,6 +31,7 @@ Route::get('collaborate', function () {
     return Inertia::render('larabudget/Collaborate');
 })->middleware(['auth', 'verified'])->name('collaborate');
 
+
 Route::get('/hasone', function () {
     $user = new User();
     $user->name = 'John Doe';
@@ -102,14 +103,15 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/notifications', [NotificationController::class, 'index']);
-    Route::put('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
-    Route::put('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
-    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy']);
+    Route::get('/notifications', [\App\Http\Controllers\larabudget\NotificationController::class, 'index']);
+    Route::put('/notifications/{id}/read', [\App\Http\Controllers\larabudget\NotificationController::class, 'markAsRead']);
+    Route::put('/notifications/read-all', [\App\Http\Controllers\larabudget\NotificationController::class, 'markAllAsRead']);
+    Route::delete('/notifications/{id}', [\App\Http\Controllers\larabudget\NotificationController::class, 'destroy']);
 });
 
+
 Route::resource('collaborations', CollaborateController::class)->middleware(['auth']);
-Route::post('/contributions', [ContributionController::class, 'store'])->name('contributions.store');
+Route::post('/contributions', [ContributionController::class, 'store'])->name('contributions.store'); 
 
 
 

@@ -88,7 +88,7 @@ export default {
   methods: {
     async fetchNotifications() {
       try {
-        const response = await axios.get('/api/notifications');
+        const response = await axios.get('/notifications');
         this.notifications = response.data;
       } catch (error) {
         console.error('Error fetching notifications:', error);
