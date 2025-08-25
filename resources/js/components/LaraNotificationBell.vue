@@ -8,7 +8,7 @@
     </button>
 
     <transition name="fade">
-      <div v-if="showNotifications" class="absolute right-0 mt-2 w-96 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+      <div v-if="showNotifications" class="absolute right-0 mt-2 w-96 bg-black border border-gray-200 rounded-lg shadow-lg z-50">
         <div class="p-4 border-b border-secondary flex justify-between items-center">
           <h3 class="text-lg font-semibold text-primary">Notifications</h3>
           <button @click="markAllAsRead" class="text-sm text-blue-500 hover:underline">Mark all as read</button>
@@ -23,13 +23,13 @@
             <div 
               v-for="notification in notifications" 
               :key="notification.id"
-              :class="['p-4 border-b border-gray-100 flex justify-between items-start', { 'bg-gray-50': !notification.read }]"
+              :class="['p-4 border-b border-gray-100 flex justify-between items-start', { 'bg-black-50': !notification.read }]"
             >
               <div class="flex-1">
-                <div class="text-sm font-medium text-gray-700">
+                <div class="text-sm font-medium text-white-700">
                   {{ getNotificationTypeLabel(notification.type) }}
                 </div>
-                <div class="text-sm text-gray-600">{{ notification.title }}</div>
+                <div class="text-sm text-white-600">{{ notification.title }}</div>
                 <div class="text-sm text-gray-500">{{ notification.message }}</div>
 
                 <div v-if="notification.type === 'friend_request'" class="mt-2 flex gap-2">
@@ -52,145 +52,60 @@
 </template>
 
 <script>
-import Pusher from 'pusher-js';
 import axios from 'axios';
-
-const userId = localStorage.getItem('user_id');
 
 export default {
   data() {
     return {
-      notifications: [],
       showNotifications: false,
-      pusher: null,
-      channel: null
-    };
-  },
-
-  computed: {
-    unreadCount() {      
-    return Array.isArray(this.notifications)
-          ? this.notifications.filter(n => !n.read).length
-          : 0;
-
-        }
-  },
-
-  async mounted() {
-    await this.fetchNotifications();
-    this.initializePusher();
-  },
-
-  beforeUnmount() {
-    if (this.pusher) {
-      this.pusher.disconnect();
+      notifications: [],
+      unreadCount: 0
     }
   },
 
+  mounted() {
+    this.fetchNotifications();
+    this.listenForNotifications();
+    document.addEventListener('keydown', this.handleEscape);
+  },
+
+  beforeUnmount(){
+    document.removeEventListener('keydown', this.handleEscape);
+  },  
+
   methods: {
+    handleEscape(event){
+      if(event.key === 'Escape' && this.showNotifications){
+        this.showNotifications = false; 
+      }
+    },
+    toggleNotifications() {
+      this.showNotifications = !this.showNotifications;
+      if (this.showNotifications) {
+        this.fetchNotifications();
+      }
+    },
+
     async fetchNotifications() {
       try {
-        const response = await axios.get('/notifications');
-        this.notifications = response.data;
-        console.log(response.data);
+        const response = await axios.get(route('notifications.list'));
+        this.notifications = response.data.notifications;
+        this.unreadCount = response.data.unread_count;
       } catch (error) {
         console.error('Error fetching notifications:', error);
       }
     },
 
-    initializePusher() {
-      try {
-      this.pusher = new Pusher(import.meta.env.VITE_PUSHER_APP_KEY, {
-        cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
-        forceTLS: true
-      });
-      }catch (error){
-        console.log("Error Initializing Pusher", error);
-      }
-
-      this.channel = this.pusher.subscribe(`notifications.${userId}`);
-      
-      this.channel.bind('new-notification', (data) => {
-        this.notifications.unshift(data);
-        this.showBrowserNotification(data);
-      });
-      
-      this.channel.bind('friend-request-sent', (data) => {
-        const notification = {
-          id: data.id,
-          title: 'New Friend Request',
-          message: data.message,
-          type: 'friend_request',
-          data: data,
-          read: false,
-          created_at: data.created_at
-        };
-        
-        this.notifications.unshift(notification);
-        this.showBrowserNotification(notification);
-      });
-    },
-
-    showBrowserNotification(notification) {
-      if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification(notification.title, {
-          body: notification.message,
-          icon: '/icon.png'
-        });
-      }
-    },
-
-    async acceptFriendRequest(notification) {
-      try {
-        const response = await axios.post('/friend-requests/accept', {
-          friend_request_id: notification.data.friend_request_id || notification.id
-        });
-        
-        await this.markAsRead(notification);
-        
-        this.notifications = this.notifications.filter(n => n.id !== notification.id);
-        
-        this.$toast.success('Friend request accepted');
-      } catch (error) {
-        console.error('Error accepting friend request:', error);
-        this.$toast.error('Failed to accept friend request');
-      }
-    },
-
-    async declineFriendRequest(notification) {
-      try {
-        const response = await axios.post('/friend-requests/decline', {
-          friend_request_id: notification.data.friend_request_id || notification.id
-        });
-        
-        await this.markAsRead(notification);
-        
-        this.notifications = this.notifications.filter(n => n.id !== notification.id);
-        
-        this.$toast.info('Friend request declined');
-      } catch (error) {
-        console.error('Error declining friend request:', error);
-        this.$toast.error('Failed to decline friend request');
-      }
-    },
-
-    async markAsRead(notification) {
-      if (!notification.read) {
-        try {
-          await axios.put(`/notifications/${notification.id}/read`);
-          notification.read = true;
-        } catch (error) {
-          console.error('Error marking as read:', error);
-        }
-      }
-    },
-
     async markAllAsRead() {
       try {
-        await axios.put('/notifications/read-all');
-        this.notifications.forEach(n => n.read = true);
+        await axios.post('/notifications/mark-all-read');
+        this.notifications = this.notifications.map(notification => ({
+          ...notification,
+          read: true
+        }));
+        this.unreadCount = 0;
       } catch (error) {
-        console.error('Error marking all as read:', error);
+        console.error('Error marking notifications as read:', error);
       }
     },
 
@@ -198,38 +113,73 @@ export default {
       try {
         await axios.delete(`/notifications/${notification.id}`);
         this.notifications = this.notifications.filter(n => n.id !== notification.id);
+        if (!notification.read) {
+          this.unreadCount--;
+        }
       } catch (error) {
         console.error('Error deleting notification:', error);
       }
     },
 
-    toggleNotifications() {
-      this.showNotifications = !this.showNotifications;
+    async acceptFriendRequest(notification) {
+      try {
+        await axios.post('/friend-requests/respond', {
+          request_id: notification.data.request_id, // Assuming you store request_id in notification data
+          action: 'accept'
+        });
+        
+        this.notifications = this.notifications.filter(n => n.id !== notification.id);
+        this.unreadCount--;
+        
+      } catch (error) {
+        console.error('Error accepting friend request:', error);
+      }
     },
 
-    formatTime(dateString) {
-      return new Date(dateString).toLocaleTimeString();
+    async declineFriendRequest(notification) {
+      try {
+        await axios.post('/friend-requests/respond', {
+          request_id: notification.data.request_id,
+          action: 'reject'
+        });
+        
+        this.notifications = this.notifications.filter(n => n.id !== notification.id);
+        this.unreadCount--;
+        
+      } catch (error) {
+        console.error('Error declining friend request:', error);
+      }
     },
-    
+
     getNotificationTypeLabel(type) {
       const types = {
-        'friend_request': 'Friend Request',
-        'info': 'Information',
-        'success': 'Success',
-        'warning': 'Warning',
-        'error': 'Error'
+        friend_request: 'Friend Request',
       };
-      
       return types[type] || type;
+    },
+
+    formatTime(timestamp) {
+      return new Date(timestamp).toLocaleString();
+    },
+
+    listenForNotifications() {
+      if (typeof Echo !== 'undefined') {
+        Echo.private(`App.Models.User.${this.$page.props.auth.user.id}`)
+          .notification((notification) => {
+            this.notifications.unshift(notification);
+            this.unreadCount++;
+          });
+      }
     }
   }
-};
+}
 </script>
 
 <style scoped>
 .fade-enter-active, .fade-leave-active {
   transition: opacity 0.2s ease;
 }
+
 .fade-enter-from, .fade-leave-to {
   opacity: 0;
 }

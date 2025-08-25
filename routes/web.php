@@ -103,7 +103,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/notifications', [\App\Http\Controllers\larabudget\NotificationController::class, 'index']);
+    Route::get('/notifications', [\App\Http\Controllers\larabudget\NotificationController::class, 'index'])->name('notifications.list');
     Route::put('/notifications/{id}/read', [\App\Http\Controllers\larabudget\NotificationController::class, 'markAsRead']);
     Route::put('/notifications/read-all', [\App\Http\Controllers\larabudget\NotificationController::class, 'markAllAsRead']);
     Route::delete('/notifications/{id}', [\App\Http\Controllers\larabudget\NotificationController::class, 'destroy']);
