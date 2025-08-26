@@ -125,7 +125,7 @@ export default {
     async acceptFriendRequest(notification) {
       try {
         await axios.post(route('friend.request.respond'), {
-          request_id: notification.data.request_id, 
+          request_id: notification.request_id, 
           action: 'accept'
         });
         this.notifications = this.notifications.filter(n => n.id !== notification.id);

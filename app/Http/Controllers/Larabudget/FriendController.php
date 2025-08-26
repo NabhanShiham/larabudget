@@ -113,10 +113,18 @@ public function listFriends(Request $request)
 {
     $user = $request->user();
 
-    $friends = $user->friends()
-        ->select('users.id', 'users.name', 'users.email') 
-        ->get();
+    $acceptedRequests = FriendRequest::where('status', 'accepted')
+            ->where(function ($query) use ($user){
+                $query->where('sender_id', $user->id)
+                        ->orWhere('receiver_id', $user->id);
+            })->get();
 
+    // from the accepted requests get the users that are not the user and return 
+    $friendIds = $acceptedRequests->map(function ($request) use ($user){
+        return $request->sender_id === $user->id ? $request->receiver_id : $request->sender_id;
+    });
+
+    $friends = User::whereIn('id', $friendIds)->get();
     return response()->json([
         'friends' => $friends
     ]);

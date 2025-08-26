@@ -44,7 +44,7 @@ class CategoryController extends Controller
 
         auth()->user()->categories()->create($validated);
 
-        return redirect()->route('spending');
+        return redirect()->back();
     }
 
     /**
@@ -102,7 +102,7 @@ class CategoryController extends Controller
         }
         $category->delete();
         
-        return redirect()->route('spending')->with([
+        return redirect()->back()->with([
                 'success' => 'Category deleted successfully'
             ]);
     }

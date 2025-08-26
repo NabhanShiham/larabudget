@@ -9,6 +9,8 @@ import DialogContent from '@/components/ui/dialog/DialogContent.vue';
 import DialogTrigger from '@/components/ui/dialog/DialogTrigger.vue';
 import { PencilIcon, Search } from 'lucide-vue-next';
 import LaraAddFriendsForm from '@/components/LaraAddFriendsForm.vue';
+import LaraFriendsList from '@/components/LaraFriendsList.vue';
+import { SearchIcon } from 'lucide-vue-next';
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Friends',
@@ -42,9 +44,11 @@ const breadcrumbs: BreadcrumbItem[] = [
               <LaraAddFriendsForm />
             </DialogContent>
           </Dialog>
-                <div class="flex flex-wrap justify-center gap-4 p-4">
-                    <p>Friends List</p>
-                <!-- Add Friends list -->
+                <div class="grid grid-rows-1 grid-flow-col flex justify-center gap-4 p-4">
+                    <p>Your Friends</p>
+            </div>
+                <div class="flex row-span-1 justify-center">
+                <LaraFriendsList />
                 </div>
             </div>
         </div>
