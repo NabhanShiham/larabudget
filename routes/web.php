@@ -100,6 +100,8 @@ Route::middleware(['auth'])->group(function () {
         ->name('friend.requests.pending');
     Route::get('/friends-list', [\App\Http\Controllers\larabudget\FriendController::class, 'listFriends'])
         ->name('friends.list');
+    Route::put('/friendship-end', [\App\Http\Controllers\larabudget\FriendController::class, 'removeFriend'])
+        ->name('remove.friend');
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -110,8 +112,9 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
-Route::resource('collaborations', CollaborateController::class)->middleware(['auth']);
-Route::post('/contributions', [ContributionController::class, 'store'])->name('contributions.store'); 
+Route::resource('collaborations', \App\Http\Controllers\larabudget\CollaborateController::class)->middleware(['auth']);
+Route::post('/create-collaborate', [\App\Http\Controllers\larabudget\CollaborateController::class, 'store'])->name('create.collaborate');
+Route::post('/contributions', [\App\Http\Controllers\larabudget\ContributionController::class, 'store'])->name('contributions.store'); 
 
 
 
