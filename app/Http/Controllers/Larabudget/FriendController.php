@@ -142,4 +142,33 @@ public function listFriends(Request $request)
     return response()->json(['requests' => $requests]);
 }
 
+public function removeFriend(Request $request)
+{
+    $user = $request->user();
+    $friendId = $request->input('friendId');
+
+    $friendRequest = FriendRequest::where('status', 'accepted')
+        ->where(function ($query) use ($user, $friendId) {
+            $query->where(function ($q) use ($user, $friendId) {
+                $q->where('sender_id', $user->id)
+                  ->where('receiver_id', $friendId);
+            })->orWhere(function ($q) use ($user, $friendId) {
+                $q->where('sender_id', $friendId)
+                  ->where('receiver_id', $user->id);
+            });
+        })
+        ->first();
+    if (!$friendRequest) {
+        return response()->json([
+            'message' => 'Friend request not found or already deleted'
+        ], 404);
+    }
+
+    $friendRequest->delete();
+
+    return response()->json([
+        'message' => 'Friend removed successfully'
+    ]);
+}
+
 }

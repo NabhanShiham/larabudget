@@ -28,7 +28,7 @@
         </Dialog>
         <Dialog>
             <DialogTrigger>
-                <button @click="removeFriend(friend.id)" class="px-1 py-1 text-xs bg-red-100 hover:bg-red-200 text-red-700 rounded-md transition-colors flex items-center">
+                <button class="px-1 py-1 text-xs bg-red-100 hover:bg-red-200 text-red-700 rounded-md transition-colors flex items-center">
                     <i class="fas fa-user-times mr-1"></i> Remove
                 </button>
             </DialogTrigger>
@@ -82,7 +82,7 @@ const fetchFriends = () => {
 
 const removeFriend = (id: number) => {
     try {
-        axios.put(route('remove.friend'))
+        axios.put(route('remove.friend'), {friendId: id})
         .then(response => {
             console.log(response);
         });
