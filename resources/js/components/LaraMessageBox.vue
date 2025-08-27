@@ -26,17 +26,20 @@
       placeholder="Say sumn twin..."
       class="border rounded px-2 py-1 w-full"
     />
-    <button
+    <div class="flex justify-end">
+      <button
       @click="send"
       class="bg-blue-500 text-white px-4 py-2 rounded ml-2 hover:bg-blue-600"
     >
       Send
     </button>
+    </div>
+    
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, nextTick, onMounted } from 'vue';
 import axios from 'axios';
 
 
@@ -46,9 +49,20 @@ const props = defineProps<{
   chatMessages: Array<{ id: number; content: string; sender_id: number; recipient_id: number }>;
 }>();
 
+onMounted(()=> {
+  scrollToBottom();
+});
 
 const newMessage = ref('');
-const emit = defineEmits(['messageSent']);
+const emit = defineEmits(['MessageSent']);
+
+const scrollToBottom = () => {
+  nextTick(() => {
+    const container = document.querySelector('.messages');
+    if (container) container.scrollTop = container.scrollHeight;
+  });
+};
+
 
 const send = async () => {
   if (!newMessage.value.trim()) return;
@@ -60,7 +74,7 @@ const send = async () => {
       content: newMessage.value
     });
 
-    emit('messageSent', response.data.message);
+    emit('MessageSent', response.data.message);
 
     newMessage.value = '';
   } catch (error) {

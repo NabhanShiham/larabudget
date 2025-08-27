@@ -2,23 +2,37 @@
 import { Paperclip, PlusIcon, TrashIcon, EyeIcon, DownloadIcon, User } from 'lucide-vue-next';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { router } from '@inertiajs/vue3';
 import LaraPurchaseForm from './LaraPurchaseForm.vue';
 import axios from 'axios';
 import LaraMessageBox from './LaraMessageBox.vue';
 import LaraCollaborateForm from './LaraCollaborateForm.vue';
-
-onMounted(() => {
-  fetchFriends();
-  getUserId(); 
-});
+import Pusher from 'pusher-js';
+import Echo from 'laravel-echo';
 
 const friends = ref<Array<{id: number; name: string}>>([]);
 const showMessageBox = ref(false);
 const currentUserId = ref<number>(0);
 const recipientId = ref<number>(0);
 const chatMessages = ref<Array<{ id: number; content: string; sender_id: number; recipient_id: number }>>([]);
+
+onMounted(() => {
+  fetchFriends();
+  getUserId(); 
+});
+
+window.Pusher = Pusher;
+const pusherKey = '30e66a7ce4a62122a6ed';
+const pusherCluster = 'ap2';
+const echo = new Echo({
+    broadcaster: 'pusher',
+    key: pusherKey,
+    cluster: pusherCluster,
+    forceTLS: true
+});
+
+
 
 const fetchFriends = () => {
     try {
@@ -47,6 +61,10 @@ const getUserId = async () => {
     try {
         const response = await axios.get(route('get.user'));
         currentUserId.value = response.data.user.id;
+        echo.private(`chat.${currentUserId.value}`)
+            .listen('MessageSent', (e: { message: { id: number; content: string; sender_id: number; recipient_id: number; }; }) => {
+        chatMessages.value.push(e.message);
+        })
     }catch (error){
         console.log('Error getting User Id:', error);
     }
@@ -91,6 +109,8 @@ const formatDate = (dateString: string) => {
 const refreshProfile = () => {
   window.location.reload();
 }
+
+
 </script>
 
 
@@ -114,7 +134,7 @@ const refreshProfile = () => {
                     :currentUserId="currentUserId"
                     :recipientId="recipientId"
                     :chatMessages="chatMessages"
-                    @messageSent="handleNewMessage"
+                    @MessageSent="handleNewMessage"
                 />                
             </DialogContent>
         </Dialog>

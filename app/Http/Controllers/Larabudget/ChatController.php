@@ -34,6 +34,7 @@ class ChatController extends Controller
         ]);
 
         $message = Message::create($validated);
+        event(new MessageSent($message));
 
         return response()->json(['message' => $message], 201);
     }
