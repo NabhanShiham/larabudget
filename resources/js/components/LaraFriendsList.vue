@@ -1,3 +1,93 @@
+<script setup lang="ts">
+import { Paperclip, PlusIcon, TrashIcon, EyeIcon, DownloadIcon, User } from 'lucide-vue-next';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { computed, onMounted, ref } from 'vue';
+import { router } from '@inertiajs/vue3';
+import LaraPurchaseForm from './LaraPurchaseForm.vue';
+import axios from 'axios';
+import LaraMessageBox from './LaraMessageBox.vue';
+import LaraCollaborateForm from './LaraCollaborateForm.vue';
+
+onMounted(() => {
+  fetchFriends();
+  const storedId = localStorage.getItem('user_id');
+  if(storedId){
+    currentUserId.value = parseInt(storedId);
+  }
+});
+
+const friends = ref<Array<{id: number; name: string}>>([]);
+const showMessageBox = ref(false);
+const currentUserId = ref<number>(0);
+const recipientId = ref<number>(0);
+const chatMessages = ref<Array<{ id: number; content: string; sender_id: number; recipient_id: number }>>([]);
+
+const fetchFriends = () => {
+    try {
+        axios.get(route('friends.list'))
+        .then(response =>{
+            friends.value = response.data.friends
+            console.log(friends.value)
+        });
+    }catch (error){
+        console.error('Error fetching friends: ', error)
+    }
+}
+
+const removeFriend = (id: number) => {
+    try {
+        axios.put(route('remove.friend'), {friendId: id})
+        .then(response => {
+            console.log(response);
+        });
+    }catch (error){
+        console.error('Error removing friend: ', error)
+    }
+}
+
+const getFriendMessages = async (id: number) => {
+  const selectedUser = friends.value.find(friend => friend.id === id);
+  if (selectedUser) {
+    recipientId.value = selectedUser.id;
+    showMessageBox.value = true;
+    try {
+      const response = await axios.get(route('chat.messages'), {
+        params: {
+          sender_id: currentUserId.value,
+          recipient_id: selectedUser.id
+        }
+      });
+      chatMessages.value = response.data.messages;
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+    }
+  }
+};
+
+const collaborate = (id: number) => {
+    // todo
+}
+
+const handleNewMessage = (message: { id: number; content: string; sender_id: number; recipient_id: number; }) => {
+  chatMessages.value.push(message);
+};
+
+
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric'
+  })
+}
+
+const refreshProfile = () => {
+  window.location.reload();
+}
+</script>
+
+
+
 <template>
 <div class="border rounded-lg p-1 w-86" :class="
     'border-black-200 bg-black-50 dark:bg-black-900/20 dark:border-black-800'
@@ -8,12 +98,17 @@
         
         <Dialog>
             <DialogTrigger>
-                <button @click="messageFriend(friend.id)" class="px-1 py-1 text-xs bg-indigo-100 hover:bg-indigo-200 text-indigo-700 rounded-md transition-colors flex items-center">
+                <button @click="getFriendMessages(friend.id)" class="px-1 py-1 text-xs bg-indigo-100 hover:bg-indigo-200 text-indigo-700 rounded-md transition-colors flex items-center">
                     <i class="fas fa-comment mr-1"></i> Message
                 </button>
             </DialogTrigger>
             <DialogContent>
-                <LaraMessageBox />                
+                <LaraMessageBox 
+                    :currentUserId="currentUserId"
+                    :recipientId="recipientId"
+                    :chatMessages="chatMessages"
+                    @messageSent="handleNewMessage"
+                />                
             </DialogContent>
         </Dialog>
         <Dialog>
@@ -51,63 +146,3 @@
 
 </template>
 
-<script setup lang="ts">
-import { Paperclip, PlusIcon, TrashIcon, EyeIcon, DownloadIcon } from 'lucide-vue-next';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { computed, onMounted, ref } from 'vue';
-import { router } from '@inertiajs/vue3';
-import LaraPurchaseForm from './LaraPurchaseForm.vue';
-import axios from 'axios';
-import LaraMessageBox from './LaraMessageBox.vue';
-import LaraCollaborateForm from './LaraCollaborateForm.vue';
-
-onMounted(() => {
-  fetchFriends();
-});
-
-const friends = ref<Array<{id: number; name: string}>>([]);
-const showMessageBox = ref(false);
-
-const fetchFriends = () => {
-    try {
-        axios.get(route('friends.list'))
-        .then(response =>{
-            friends.value = response.data.friends
-        });
-    }catch (error){
-        console.error('Error fetching friends: ', error)
-    }
-}
-
-const removeFriend = (id: number) => {
-    try {
-        axios.put(route('remove.friend'), {friendId: id})
-        .then(response => {
-            console.log(response);
-        });
-    }catch (error){
-        console.error('Error removing friend: ', error)
-    }
-}
-
-const messageFriend = (id: number) => {
-    showMessageBox.value = true;
-}
-
-const collaborate = (id: number) => {
-    // todo
-}
-
-
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric'
-  })
-}
-
-const refreshProfile = () => {
-  window.location.reload();
-}
-</script>

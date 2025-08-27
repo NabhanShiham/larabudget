@@ -121,7 +121,6 @@ export default {
       }
     },
 
-    // take request_id, query from db and then accept
     async acceptFriendRequest(notification) {
       try {
         await axios.post(route('friend.request.respond'), {

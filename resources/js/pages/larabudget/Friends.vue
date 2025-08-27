@@ -46,7 +46,7 @@ const breadcrumbs: BreadcrumbItem[] = [
           </Dialog>
                 <div class="grid grid-rows-1 grid-flow-col flex justify-center gap-4 p-4">
                     <p>Your Friends</p>
-            </div>
+                </div>
                 <div class="flex row-span-1 justify-center">
                 <LaraFriendsList />
                 </div>

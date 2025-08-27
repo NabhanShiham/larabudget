@@ -111,6 +111,8 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/notifications/{id}', [\App\Http\Controllers\larabudget\NotificationController::class, 'destroy']);
 });
 
+Route::get('/chat/messages', [\App\Http\Controllers\larabudget\ChatController::class, 'index'])->name('chat.messages');
+Route::post('/chat/send', [\App\Http\Controllers\larabudget\ChatController::class, 'index'])->name('chat.send');
 
 Route::resource('collaborations', \App\Http\Controllers\larabudget\CollaborateController::class)->middleware(['auth']);
 Route::post('/create-collaborate', [\App\Http\Controllers\larabudget\CollaborateController::class, 'store'])->name('create.collaborate');
