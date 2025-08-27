@@ -37,7 +37,7 @@ onMounted(async () => {
   try {
     const response = await axios.get('larabudget/profile');
     profile.value = response.data.profile;
-    localStorage.setItem('user_id', response.data.profile.user_id);
+    localStorage.setItem('user_id', String(response.data.profile.user_id));
   } catch (error) {
     console.error('Error getting yo profile cuh:', error);
   }

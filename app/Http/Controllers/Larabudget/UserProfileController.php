@@ -45,6 +45,13 @@ class UserProfileController extends Controller
         return redirect()->back()
             ->with('success', 'Budget updated successfully!');
     }
+    public function getUser(Request $request)
+    {
+        $user = $request->user();
+        return response()->json([
+            'user' => $user
+        ]);
+    }
 
 
 public function show(Request $request)

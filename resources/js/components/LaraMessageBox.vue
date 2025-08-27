@@ -1,5 +1,25 @@
 <template>
   <div class="input-area">
+    <div class="messages space-y-2 mb-4 max-h-64 overflow-y-auto">
+      <div
+        v-for="message in chatMessages"
+        :key="message.id"
+        :class="{
+          'text-right': message.sender_id === currentUserId,
+          'text-left': message.sender_id !== currentUserId
+        }"
+      >
+      <span
+        :class="{
+          'bg-blue-100 text-blue-800': message.sender_id === currentUserId,
+          'bg-gray-200 text-gray-800': message.sender_id !== currentUserId
+        }"
+        class="inline-block px-3 py-2 rounded"
+      >
+        {{message.content}}
+      </span>
+      </div>
+    </div>
     <input
       v-model="newMessage"
       @keyup.enter="send"

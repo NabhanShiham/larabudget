@@ -11,10 +11,7 @@ import LaraCollaborateForm from './LaraCollaborateForm.vue';
 
 onMounted(() => {
   fetchFriends();
-  const storedId = localStorage.getItem('user_id');
-  if(storedId){
-    currentUserId.value = parseInt(storedId);
-  }
+  getUserId(); 
 });
 
 const friends = ref<Array<{id: number; name: string}>>([]);
@@ -46,7 +43,17 @@ const removeFriend = (id: number) => {
     }
 }
 
+const getUserId = async () => {
+    try {
+        const response = await axios.get(route('get.user'));
+        currentUserId.value = response.data.user.id;
+    }catch (error){
+        console.log('Error getting User Id:', error);
+    }
+}
+
 const getFriendMessages = async (id: number) => {
+    console.log(currentUserId.value)
   const selectedUser = friends.value.find(friend => friend.id === id);
   if (selectedUser) {
     recipientId.value = selectedUser.id;
