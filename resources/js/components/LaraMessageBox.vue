@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick, onMounted } from 'vue';
+import { ref, nextTick, onMounted, onRenderTriggered } from 'vue';
 import axios from 'axios';
 
 
@@ -51,16 +51,14 @@ const props = defineProps<{
 
 onMounted(()=> {
   scrollToBottom();
-});
+})
 
 const newMessage = ref('');
 const emit = defineEmits(['messageSent']);
 
 const scrollToBottom = () => {
-  nextTick(() => {
     const container = document.querySelector('.messages');
     if (container) container.scrollTop = container.scrollHeight;
-  });
 };
 
 
@@ -73,7 +71,7 @@ const send = async () => {
       recipient_id: props.recipientId,
       content: newMessage.value
     });
-
+    
     emit('messageSent', response.data.message);
 
     newMessage.value = '';

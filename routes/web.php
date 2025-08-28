@@ -3,12 +3,18 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\Larabudget;
+use App\Http\Controllers\Socialite;
+
 
 
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
+
+Route::get('/auth/{provider}/redirect', \App\Http\Controllers\Socialite\ProviderRedirectController::class)->name('auth.redirect');
+Route::get('/auth/{provider}/callback', \App\Http\Controllers\Socialite\ProviderCallBackController::class)->name('auth.callback');
+
 
 
 Route::get('dashboard', function () {
@@ -119,9 +125,6 @@ Route::get('/getUser', [\App\Http\Controllers\larabudget\UserProfileController::
 Route::resource('collaborations', \App\Http\Controllers\larabudget\CollaborateController::class)->middleware(['auth']);
 Route::post('/create-collaborate', [\App\Http\Controllers\larabudget\CollaborateController::class, 'store'])->name('create.collaborate');
 Route::post('/contributions', [\App\Http\Controllers\larabudget\ContributionController::class, 'store'])->name('contributions.store'); 
-
-
-
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';

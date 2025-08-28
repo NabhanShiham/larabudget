@@ -83,6 +83,10 @@ const submit = () => {
                     Log in
                 </Button>
             </div>
+            <div class="text-center text-sm text-muted-foreground">
+                Login with 
+                <TextLink :href="route('auth.redirect', 'github')" :tabindex="5">GitHub</TextLink>
+            </div>
 
             <div class="text-center text-sm text-muted-foreground">
                 Don't have an account?
