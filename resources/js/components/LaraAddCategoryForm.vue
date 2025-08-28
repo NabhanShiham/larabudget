@@ -73,8 +73,8 @@ const submitCategory = () => {
   })
 }
 const closeCategoryModal = () => {
-  categoryForm.clearErrors()
-  categoryForm.reset()
+  // categoryForm.clearErrors()
+  // categoryForm.reset()
   refreshProfile()
 }
 const refreshProfile = () => {

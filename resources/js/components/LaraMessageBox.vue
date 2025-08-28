@@ -54,7 +54,7 @@ onMounted(()=> {
 });
 
 const newMessage = ref('');
-const emit = defineEmits(['MessageSent']);
+const emit = defineEmits(['messageSent']);
 
 const scrollToBottom = () => {
   nextTick(() => {
@@ -74,7 +74,7 @@ const send = async () => {
       content: newMessage.value
     });
 
-    emit('MessageSent', response.data.message);
+    emit('messageSent', response.data.message);
 
     newMessage.value = '';
   } catch (error) {

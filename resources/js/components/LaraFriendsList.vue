@@ -57,12 +57,13 @@ const removeFriend = (id: number) => {
     }
 }
 
+// fix this horribleness - method is only called once on mount but echo.private() needs to be in outside scope but then currentUserId returns zero because no selection has been made.
 const getUserId = async () => {
     try {
         const response = await axios.get(route('get.user'));
         currentUserId.value = response.data.user.id;
         echo.private(`chat.${currentUserId.value}`)
-            .listen('MessageSent', (e: { message: { id: number; content: string; sender_id: number; recipient_id: number; }; }) => {
+            .listen('messageSent', (e: { message: { id: number; content: string; sender_id: number; recipient_id: number; }; }) => {
         chatMessages.value.push(e.message);
         })
     }catch (error){
@@ -125,7 +126,7 @@ const refreshProfile = () => {
         
         <Dialog>
             <DialogTrigger>
-                <button @click="getFriendMessages(friend.id)" class="px-1 py-1 text-xs bg-indigo-100 hover:bg-indigo-200 text-indigo-700 rounded-md transition-colors flex items-center">
+                <button @click="getFriendMessages(friend.id), getUserId()" class="px-1 py-1 text-xs bg-indigo-100 hover:bg-indigo-200 text-indigo-700 rounded-md transition-colors flex items-center">
                     <i class="fas fa-comment mr-1"></i> Message
                 </button>
             </DialogTrigger>
@@ -134,7 +135,7 @@ const refreshProfile = () => {
                     :currentUserId="currentUserId"
                     :recipientId="recipientId"
                     :chatMessages="chatMessages"
-                    @MessageSent="handleNewMessage"
+                    @messageSent="handleNewMessage"
                 />                
             </DialogContent>
         </Dialog>
