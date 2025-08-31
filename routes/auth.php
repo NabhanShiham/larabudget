@@ -55,6 +55,3 @@ Route::middleware('auth')->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
 });
-
-Route::get('{file_path}', [\App\Http\Controllers\larabudget\PurchaseController::class, 'viewReceipt'])
-    ->name('purchases.receipt.view');
